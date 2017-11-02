@@ -1,4 +1,4 @@
-package utility;
+package com.akshay.example;
 
 public class Transaction {
 	String to;

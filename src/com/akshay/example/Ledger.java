@@ -1,4 +1,4 @@
-package utility;
+package com.akshay.example;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;
@@ -22,7 +22,7 @@ public class Ledger {
 				content +=blockchain.block.transaction.toString()+","+blockchain.block.timestamp+","+blockchain.block.hash+"\n";
 				blockchain.block=blockchain.block.next;
 			}
-			fw = new FileWriter("E:\\k.txt");
+			fw = new FileWriter("~/akshay.txt");
 			bw = new BufferedWriter(fw);
 			bw.write(content);
 

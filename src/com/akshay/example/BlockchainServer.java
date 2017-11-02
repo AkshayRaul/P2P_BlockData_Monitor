@@ -1,8 +1,11 @@
-package controller;
+package com.akshay.example;
 
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Date;
+
+//import java.io.IOException;
+//import java.util.Date;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -10,17 +13,17 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import utility.Block;
-import utility.Blockchain;
-import utility.Ledger;
-import utility.Transaction;
+import com.akshay.example.Block;
+import com.akshay.example.Blockchain;
+import com.akshay.example.Ledger;
+import com.akshay.example.Transaction;
 
 /**
  * Servlet implementation class BlockchainServer
  */
 @WebServlet("/BlockchainServer")
 public class BlockchainServer extends HttpServlet {
-	private static final long serialVersionUID = 1L;
+	//private static final long serialVersionUID = 1L;
 	Blockchain bl;  
 	Ledger l;
 	Block b;
