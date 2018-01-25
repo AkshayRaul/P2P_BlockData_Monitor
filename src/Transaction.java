@@ -1,5 +1,3 @@
-package com.akshay.example;
-
 public class Transaction {
 	String to;
 	String from;

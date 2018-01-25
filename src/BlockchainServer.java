@@ -1,4 +1,3 @@
-package com.akshay.example;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -12,11 +11,6 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import com.akshay.example.Block;
-import com.akshay.example.Blockchain;
-import com.akshay.example.Ledger;
-import com.akshay.example.Transaction;
 
 /**
  * Servlet implementation class BlockchainServer
@@ -38,7 +32,7 @@ public class BlockchainServer extends HttpServlet {
 		// TODO Auto-generated method stub
 		PrintWriter p=response.getWriter();
 		String data=request.getParameter("data");
-		p.print("Received:"+data);
+		p.print("Received??!!:"+data);
 		
 		System.out.println("Connected");
 		System.out.println("Received request from:"+request.getRemoteAddr());

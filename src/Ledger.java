@@ -1,4 +1,3 @@
-package com.akshay.example;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;
