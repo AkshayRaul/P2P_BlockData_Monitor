@@ -14,28 +14,37 @@ import javax.websocket.OnMessage;
 import javax.websocket.OnOpen;
 import javax.websocket.Session;
 import javax.websocket.server.ServerEndpoint;
+// import org.json.*;
+import org.json.simple.*;
 
 /*
  * @WebServlet indicates the url of this file (ex: localhost:8080/WSTest/ws)
 */
-@ServerEndpoint("/ws/{id}")
+@ServerEndpoint("/ws")
 public class WebSocketServer {
     private static final long serialVersionUID = 1L;
+    static int count=0;
     private Session session;
     private static Set<Session> clients = new HashSet<Session>();
     public static HashMap<String, Session> users = new HashMap<String,Session>();
     @OnOpen
-    public void onOpen(Session session,@PathParam("id") String id) throws IOException {
+    public void onOpen(Session session) throws IOException {
         // Get session and WebSocket connection
-        users.put(id,session);
+       // users.put(id,session);
         clients.add(session);
-        session.getBasicRemote().sendText("Connected");      
+        System.out.println(session.getId());
     }
  
     @OnMessage
     public void onMessage(Session session, String message) throws IOException {
         // Handle new messages
-    
+        Object obj=JSONValue.parse(message);  
+        JSONObject jsonObject = (JSONObject) obj;     
+  
+        String ip = (String) jsonObject.get("ip");  
+        System.out.println("Got IP"+ip);
+        // String jsonText = JSONValue.toJSONString(obj);  
+        session.getBasicRemote().sendText("Received "+ip);      
     }
  
     @OnClose
