@@ -1,47 +1,62 @@
 <!DOCTYPE HTML>
 <html>
-   <head>
-	
-      <script type="text/javascript">
-         function WebSocketTest()
-         {
-            
-               
-               
-               // Let us open a web socket
-               var ws = new WebSocket("ws://localhost:8080/Blockchain/ws");
-				
-               ws.onopen = function()
-               {
-                  // Web Socket is connected, send data using send()
-                  ws.send("Message to send");
-                  alert("Message is sent...");
-               };
-				
-               ws.onmessage = function (evt) 
-               { 
-                  var received_msg = evt.data;
-                  alert("Message is received...");
-               };
-				
-               ws.onclose = function()
-               { 
-                  // websocket is closed.
-                  alert("Connection is closed..."); 
-               };
-					
-               window.onbeforeunload = function(event) {
-                  ws.close();
-               };
-            }         
-      </script>
-		
-   </head>
-   <body>
-   
-      <div id="sse">
-         <a href="javascript:WebSocketTest()">Run WebSocket</a>
-      </div>
-      
-   </body>
+<head>
+
+
+
+</head>
+<body>
+
+  <div id="sse">
+    <h1>
+      Websockets
+    </h1>
+
+  </div>
+  <div>
+    Select a text file:
+    <input type="file" id="input">
+  </div>
+  <pre id="fileDisplayArea"></pre>
+  <script type="text/javascript">
+  // Let us open a web socket
+  var ws = new WebSocket("ws://localhost:8080/Blockchain/ws");
+
+  var inputElement = document.getElementById("input");
+  inputElement.addEventListener("change", handleFiles, false);
+  function handleFiles() {
+    console.log("File");
+    var file = this.files[0]; /* now you can work with the file list */
+    var fr = new FileReader();
+    fr.addEventListener("loadend", function() {
+      // send the file over web sockets
+      ws.send(fr.result);
+    });
+    fr.readAsArrayBuffer(file)
+  }
+
+  ws.onopen = function()
+  {
+    // Web Socket is connected, send data using send()
+    ws.send("Message to send");
+    console.log("Message is sent...");
+  };
+
+  ws.onmessage = function (evt)
+  {
+    console.log(evt)
+  };
+
+  ws.onclose = function()
+  {
+    // websocket is closed.
+    alert("Connection is closed...");
+    ws.close();
+  };
+
+  window.onbeforeunload = function(event) {
+    ws.close();
+  };
+  </script>
+</body>
 </html>
