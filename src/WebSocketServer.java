@@ -2,7 +2,6 @@ import java.io.*;
 import java.util.*;
 import javax.websocket.*;
 import javax.websocket.server.ServerEndpoint;
-import javax.ws.rs.PathParam;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -15,15 +14,8 @@ import javax.websocket.OnMessage;
 import javax.websocket.OnOpen;
 import javax.websocket.Session;
 import javax.websocket.server.ServerEndpoint;
-import javax.websocket.HandshakeResponse;
-import javax.websocket.server.HandshakeRequest;
-import javax.websocket.server.ServerEndpointConfig;
-
-
+import javax.websocket.server.PathParam;
 import org.json.simple.*;
-import java.util.Scanner;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 //translate bytes of request to string
 
@@ -31,8 +23,8 @@ import java.util.regex.Pattern;
 /*
 * @WebServlet indicates the url of this file (ex: localhost:8080/WSTest/ws)
 */
-@ServerEndpoint("/ws")
-public class WebSocketServer extends ServerEndpointConfig.Configurator{
+@ServerEndpoint(value="/ws",configurator = HttpSessionConfigurator.class)
+public class WebSocketServer {
 
   HttpSession httpSession;
   private static final long serialVersionUID = 1L;
@@ -40,25 +32,18 @@ public class WebSocketServer extends ServerEndpointConfig.Configurator{
   private Session session;
   private static Set<Session> clients = new HashSet<Session>();
   public static HashMap<String, Session> users = new  HashMap<String,Session>();
-  @Override
-  public void modifyHandshake(ServerEndpointConfig sec, HandshakeRequest request, HandshakeResponse response) {
-    System.out.println("modifyHandshake() Current thread " + Thread.currentThread().getName());
-    String user = request.getParameterMap().get("user").get(0);
-    sec.getUserProperties().put(user, request.getHttpSession());
-    System.out.println("modifyHandshake() User " + user + " with http session ID " + ((HttpSession) request.getHttpSession()).getId());
-  }
+
 
   @OnOpen
   public void onOpen(Session session,EndpointConfig config) throws IOException {
     // Get session and WebSocket connection
     // users.put(id,session);
-    System.out.println("OPEN");
-    System.out.println("Protocol Version"+session.getProtocolVersion());
-    System.out.println(session.getRequestParameterMap().toString());
-    this.httpSession = (HttpSession) config.getUserProperties().get("user");
+    System.out.println("opened() Current thread "+ Thread.currentThread().getName());
+    this.httpSession = (HttpSession) config.getUserProperties().get("ws");
     System.out.println("User joined with http session id "+ httpSession.getId());
-    String response = "User  | WebSocket session ID "+ session.getId() +" | HTTP session ID " + httpSession.getId();
+    String response = "User | WebSocket session ID "+ session.getId() +" | HTTP session ID " + httpSession.getId();
     System.out.println(response);
+    session.getBasicRemote().sendText(response);
 
 
   }
