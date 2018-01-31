@@ -11,16 +11,19 @@
     <h1>
       Websockets
     </h1>
+    <div id="out"></div>
 
   </div>
   <div>
     Select a text file:
     <input type="file" id="input">
   </div>
+  <input type="textarea" id="inp">
+  <button onclick="SendMessage()">Send Message</button>
   <pre id="fileDisplayArea"></pre>
   <script type="text/javascript">
   // Let us open a web socket
-  var ws = new WebSocket("ws://localhost:8080/Blockchain/ws");
+  var ws = new WebSocket("ws://localhost:8080/Blockchain/ws/");
 
   var inputElement = document.getElementById("input");
   inputElement.addEventListener("change", handleFiles, false);
@@ -35,28 +38,31 @@
     fr.readAsArrayBuffer(file)
   }
 
-  ws.onopen = function()
-  {
+  ws.onopen = function(){
     // Web Socket is connected, send data using send()
     ws.send("Message to send");
     console.log("Message is sent...");
+    
   };
 
   ws.onmessage = function (evt)
   {
     console.log(evt)
+    document.getElementById("out").innerHTML=evt.data
   };
 
   ws.onclose = function()
-  {
-    // websocket is closed.
-    alert("Connection is closed...");
+  {   
+  };
+  function SendMessage(){
+    try{
+      
+      ws.send("asdas");
+    }catch(e){
+      console.log(e)
+    }
     
-  };
-
-  window.onbeforeunload = function(event) {
-
-  };
-  </script>
+  }
+</script>
 </body>
 </html>

@@ -16,14 +16,16 @@ import javax.websocket.Session;
 import javax.websocket.server.ServerEndpoint;
 import javax.websocket.server.PathParam;
 import org.json.simple.*;
-
+import javax.websocket.HandshakeResponse;
+import javax.websocket.server.HandshakeRequest;
+import javax.websocket.server.ServerEndpointConfig;
 //translate bytes of request to string
 
 
 /*
 * @WebServlet indicates the url of this file (ex: localhost:8080/WSTest/ws)
 */
-@ServerEndpoint(value="/ws",configurator = HttpSessionConfigurator.class)
+@ServerEndpoint(value="/ws/",configurator=HttpSessionConfigurator.class)
 public class WebSocketServer {
 
   HttpSession httpSession;
@@ -32,18 +34,13 @@ public class WebSocketServer {
   private Session session;
   private static Set<Session> clients = new HashSet<Session>();
   public static HashMap<String, Session> users = new  HashMap<String,Session>();
+  private final static Logger LOGGER = Logger.getLogger("Websocketserver");
 
 
   @OnOpen
   public void onOpen(Session session,EndpointConfig config) throws IOException {
     // Get session and WebSocket connection
-    // users.put(id,session);
-    System.out.println("opened() Current thread "+ Thread.currentThread().getName());
-    this.httpSession = (HttpSession) config.getUserProperties().get("ws");
-    System.out.println("User joined with http session id "+ httpSession.getId());
-    String response = "User | WebSocket session ID "+ session.getId() +" | HTTP session ID " + httpSession.getId();
-    System.out.println(response);
-    session.getBasicRemote().sendText(response);
+    session.getBasicRemote().sendText("Hello");
 
 
   }
@@ -54,11 +51,11 @@ public class WebSocketServer {
     // String jsonText = JSONValue.toJSONString(obj);
 
     session.getBasicRemote().sendText("GOT IT");
-    System.out.println("HERE");
+    LOGGER.info("HERE");
     File file = new File("/opt/tomcat/data/testSOP.docx");
     try (FileOutputStream fileOuputStream = new FileOutputStream(file)) {
       fileOuputStream.write(message);
-      System.out.println(message.toString());
+      LOGGER.info(message.toString());
     } catch (IOException e) {
       e.printStackTrace();
     }
@@ -67,14 +64,13 @@ public class WebSocketServer {
   public void onMessage(Session session, String message) throws IOException {
     // Handle new messages
     // String jsonText = JSONValue.toJSONString(obj);
-    System.out.println(message);
+    LOGGER.info(message);
+    session.getBasicRemote().sendText(message);
   }
 
   @OnClose
   public void onClose(Session session) throws IOException {
-    // WebSocket connection closes
-    //users.remove(session);
-    clients.remove(session);
+    
 
   }
 
@@ -84,17 +80,7 @@ public class WebSocketServer {
   }
 
   public void sendMessage(HashMap<String,String> distribute){
-    //Send File ID to clients
-    //Iterate over map
-    for (Object user: distribute.keySet()) {
-      Session sess=users.get(user);
-      try{
-        sess.getBasicRemote().sendText(distribute.get(user).toString());
-      }
-      catch(IOException e){
-
-      }
-    }
+    
 
   }
 }//ws
