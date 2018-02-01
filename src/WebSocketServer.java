@@ -1,5 +1,6 @@
 import java.io.*;
 import java.util.*;
+import java.util.logging.*;
 import javax.websocket.*;
 import javax.websocket.server.ServerEndpoint;
 import javax.servlet.ServletException;
@@ -40,7 +41,16 @@ public class WebSocketServer {
   @OnOpen
   public void onOpen(Session session,EndpointConfig config) throws IOException {
     // Get session and WebSocket connection
-    session.getBasicRemote().sendText("Hello");
+    HandshakeRequest request=(HandshakeRequest)session.getUserProperties().get("request");
+    Map<String,List<String>> headers=request.getHeaders();
+    Set<String> keys=headers.keySet();
+    for(String key:keys){
+      LOGGER.info(key);
+      for (Iterator<String> iter = (headers.get(key)).iterator(); iter.hasNext(); ) {
+        String val = iter.next();
+        LOGGER.info(val);
+      }
+    }
 
 
   }
@@ -49,28 +59,36 @@ public class WebSocketServer {
   public void onMessage(Session session, byte[] message) throws IOException {
     // Handle new messages
     // String jsonText = JSONValue.toJSONString(obj);
-
-    session.getBasicRemote().sendText("GOT IT");
-    LOGGER.info("HERE");
-    File file = new File("/opt/tomcat/data/testSOP.docx");
-    try (FileOutputStream fileOuputStream = new FileOutputStream(file)) {
-      fileOuputStream.write(message);
-      LOGGER.info(message.toString());
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
+    // For file transfers only
   }
   @OnMessage
   public void onMessage(Session session, String message) throws IOException {
     // Handle new messages
     // String jsonText = JSONValue.toJSONString(obj);
     LOGGER.info(message);
-    session.getBasicRemote().sendText(message);
+    /*
+      Please use JSON Objects only
+      HashMap to store file upload requests if multiple files are being uploaded
+    */
+    JSONObject jsonObject=(JSONObject) JSONValue.parse(message);
+    if((jsonObject.get("type").toString()).compareToIgnoreCase("upload")==0){
+      //GET JSON ARRAY
+
+      //Reply with IP addresses
+
+    }
+    if((jsonObject.get("type").toString()).compareToIgnoreCase("ipAddr")==0){
+      //GET JSON ARRAY
+        session.getUserProperties().put("ip",jsonObject.get("ipAddr"));
+      //Reply with IP addresses
+
+    }
+
   }
 
   @OnClose
   public void onClose(Session session) throws IOException {
-    
+    LOGGER.info("Closed:"+session.getId());
 
   }
 
@@ -80,7 +98,7 @@ public class WebSocketServer {
   }
 
   public void sendMessage(HashMap<String,String> distribute){
-    
+
 
   }
 }//ws
