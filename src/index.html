@@ -1,4 +1,4 @@
-<!DOCTYPE HTML>
+<!-- <!DOCTYPE HTML> -->
 <html>
 <head>
 
@@ -24,7 +24,7 @@
   <script type="text/javascript">
   // Let us open a web socket
   var ws = new WebSocket("ws://localhost:8080/Blockchain/ws/");
-  
+
   var inputElement = document.getElementById("input");
   inputElement.addEventListener("change", handleFiles, false);
   function handleFiles() {
@@ -40,8 +40,7 @@
 
   ws.onopen = function(){
     // Web Socket is connected, send data using send()
-    ws.send("Message to send");
-    console.log("Message is sent...");
+      console.log("Message is sent...");
 
   };
 
@@ -53,17 +52,21 @@
 
   ws.onclose = function()
   {
-    document.getElementById("out").innerHTML="Closed"
+    // document.getElementById("out").innerHTML="Closed"
   };
   function SendMessage(){
     try{
-
-      ws.send(document.getElementById("inp").value);
+      var json=JSON.stringify({
+        "messageType":"metaData",
+        "ipAddress":"adsa",
+        "storageSpace":"adasdaMB"
+      })
+      ws.send(json);
     }catch(e){
       console.log(e)
     }
 
   }
-</script>
+  </script>
 </body>
 </html>

@@ -17,6 +17,7 @@ import javax.websocket.Session;
 import javax.websocket.server.ServerEndpoint;
 import javax.websocket.server.PathParam;
 import org.json.simple.*;
+import org.json.simple.parser.*;
 import javax.websocket.HandshakeResponse;
 import javax.websocket.server.HandshakeRequest;
 import javax.websocket.server.ServerEndpointConfig;
@@ -26,7 +27,7 @@ import javax.websocket.server.ServerEndpointConfig;
 /*
 * @WebServlet indicates the url of this file (ex: localhost:8080/WSTest/ws)
 */
-@ServerEndpoint(value="/ws/",configurator=HttpSessionConfigurator.class)
+@ServerEndpoint(value="/ws/", configurator=HttpSessionConfigurator.class)
 public class WebSocketServer {
 
   HttpSession httpSession;
@@ -51,6 +52,8 @@ public class WebSocketServer {
         LOGGER.info(val);
       }
     }
+    clients.add(session);
+    // session.getBasicRemote().sendText("");
 
 
   }
@@ -64,41 +67,77 @@ public class WebSocketServer {
   @OnMessage
   public void onMessage(Session session, String message) throws IOException {
     // Handle new messages
-    // String jsonText = JSONValue.toJSONString(obj);
-    LOGGER.info(message);
+    //JSON File Upload Structure
     /*
-      Please use JSON Objects only
-      HashMap to store file upload requests if multiple files are being uploaded
-    */
-    JSONObject jsonObject=(JSONObject) JSONValue.parse(message);
-    if((jsonObject.get("type").toString()).compareToIgnoreCase("upload")==0){
-      //GET JSON ARRAY
+    {
+    "messageType":"fileUpload"
+    "files":[
+    {
+    fileName:""
+    fileSize:"",
+    fileType:""
 
-      //Reply with IP addresses
+  },..
+  ]
+}
+}
+*/
 
-    }
-    if((jsonObject.get("type").toString()).compareToIgnoreCase("ipAddr")==0){
-      //GET JSON ARRAY
-        session.getUserProperties().put("ip",jsonObject.get("ipAddr"));
-      //Reply with IP addresses
+//Send and Storage size IP Message
+/*
+{
+"messageType":"metaData"
+"ipAddress":"",
+"storageSpace":""
+}
+*/
+LOGGER.info(message);
+JSONParser jsonParser = new JSONParser();
+JSONObject jsonObject=new JSONObject();
+try{
+  jsonObject =(JSONObject) jsonParser.parse(message);
+}catch(ParseException e){
 
-    }
+}
+String messageType=(String)jsonObject.get("messageType");
+if(!messageType){
+  messageType="messageType";
+}
+LOGGER.info("MessageType:"+messageType);
+if(messageType.compareToIgnoreCase("fileUpload")==0){
+// Logic for File Distribution
+}
+else if(messageType.compareToIgnoreCase("metaData")==0){
+  LOGGER.info("messagetype: "+(String)jsonObject.get("messageType"));
+  session.getUserProperties().put("ip",(String)jsonObject.get("ipAddress"));
+  session.getUserProperties().put("storageSpace",(String)jsonObject.get("storageSpace"));
+}
 
-  }
+// LOGGER.info("Test:"+(String)jsonObject.get("test"));
+// LOGGER.info("JSON:"+(String)jsonObject.get("messageType"));
+try{
+  // session.getBasicRemote().sendObject((Object)jsonObject);
+}catch(Exception e){
 
-  @OnClose
-  public void onClose(Session session) throws IOException {
-    LOGGER.info("Closed:"+session.getId());
+}
+session.getBasicRemote().sendText(message);
+}
 
-  }
+@OnClose
+public void onClose(Session session) throws IOException {
+  LOGGER.info("Closed:"+session.getId());
+  LOGGER.info("IP:"+session.getUserProperties().get("ipAddress"));
+LOGGER.info("IP:"+session.getUserProperties().get("storageSpace"));
+  clients.remove(session);
+}
 
-  @OnError
-  public void onError(Session session, Throwable throwable) {
-    // Do error handling here
-  }
+@OnError
+public void onError(Session session, Throwable throwable) {
+  // Do error handling here
+}
 
-  public void sendMessage(HashMap<String,String> distribute){
+public void sendMessage(HashMap<String,String> distribute){
 
 
-  }
+}
 }//ws
