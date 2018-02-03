@@ -58,7 +58,7 @@
     try{
       var json=JSON.stringify({
         "messageType":"metaData",
-        "ipAddress":"adsa",
+        "ipAddress":document.getElementById("inp").value,
         "storageSpace":"adasdaMB"
       })
       ws.send(json);

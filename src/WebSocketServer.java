@@ -52,6 +52,7 @@ public class WebSocketServer {
         LOGGER.info(val);
       }
     }
+    LOGGER.info(session.getId());
     clients.add(session);
     // session.getBasicRemote().sendText("");
 
@@ -100,7 +101,7 @@ try{
 
 }
 String messageType=(String)jsonObject.get("messageType");
-if(!messageType){
+if(messageType!=null){
   messageType="messageType";
 }
 LOGGER.info("MessageType:"+messageType);
