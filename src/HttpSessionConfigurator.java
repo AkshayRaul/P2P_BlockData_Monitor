@@ -17,6 +17,7 @@ public class HttpSessionConfigurator extends ServerEndpointConfig.Configurator {
     LOGGER.info(request.SEC_WEBSOCKET_KEY);
     config.getUserProperties().put("request",request);
     LOGGER.info((request.getHeaders()).get("sec-websocket-key").toString());
+    System.gc();
     super.modifyHandshake(config, request, response);
 
   }
