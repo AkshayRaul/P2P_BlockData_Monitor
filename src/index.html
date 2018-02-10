@@ -23,7 +23,7 @@
   <pre id="fileDisplayArea"></pre>
   <script type="text/javascript">
   // Let us open a web socket
-  var ws = new WebSocket("ws://localhost:8080/Blockchain/ws/");
+  var ws = new WebSocket("wss://127.0.0.1:8080/Blockchain/ws/");
 
   var inputElement = document.getElementById("input");
   inputElement.addEventListener("change", handleFiles, false);

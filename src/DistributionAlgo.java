@@ -8,20 +8,17 @@ import java.util.HashMap;
 //import java.util.Date;
 
 /**
- * Servlet implementation class DistributionAlgo
- */
+* Servlet implementation class DistributionAlgo
+*/
 public class DistributionAlgo  {
 	private Integer storage;
-    private double rating;
-    private double onlinePercent;
-	public HashMap<String,String> compute(){
-        HashMap<String,String> distribute=new HashMap<String,String>();
-        /**
-         *  Distribute Logic
-         */
-
-
-        return distribute;
-    }
+	private double rating;
+	private double onlinePercent;
+	DistributionAlgo(int storage,double rating,double onlinePercent){
+		this.storage=storage;
+		this.rating=rating;
+		this.onlinePercent=onlinePercent;
+	}
+	
 
 }
