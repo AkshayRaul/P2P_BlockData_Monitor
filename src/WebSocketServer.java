@@ -44,7 +44,7 @@ public class WebSocketServer {
         return clientData;
     }
     static ArrayList<Session> getOpenSessions(){
-        return clients
+        return clients;
     }
     public void finalize(){
 
@@ -90,8 +90,7 @@ public class WebSocketServer {
 
 
         // Distribution =========================================================================
-
-
+        new DistributionAlgo().distribute();
         //========================================================================================
         broadcast(session,fileMD.get(session.getUserProperties().get("userId")).get(0).getFileName());
         fileMD.get(session.getUserProperties().get("userId")).remove(0);
