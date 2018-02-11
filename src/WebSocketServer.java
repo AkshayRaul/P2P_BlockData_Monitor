@@ -35,11 +35,17 @@ public class WebSocketServer {
     private static final long serialVersionUID = 1L;
     static int count=0;
     private Session session;
-    private static Set<Session> clients = new HashSet<Session>();
-    static HashMap<String,DistributionAlgo> clientDistAlgo= new HashMap<String,DistributionAlgo>();
+    private static ArrayList<Session> clients = new ArrayList<Session>();
+    static HashMap<String,DistributionAlgo> clientData= new HashMap<String,DistributionAlgo>();
     public static HashMap<String, ArrayList<fileMetaData>> fileMD = new  HashMap<String,ArrayList<fileMetaData>>();
     private final static Logger LOGGER = Logger.getLogger("Websocketserver");
 
+    static HashMap<String,DistributionAlgo> getClientData(){
+        return clientData;
+    }
+    static ArrayList<Session> getOpenSessions(){
+        return clients
+    }
     public void finalize(){
 
     }
@@ -74,7 +80,7 @@ public class WebSocketServer {
         // For file transfers only
         LOGGER.severe("message from "+session.getId());
         //session.getBasicRemote().sendText("GOT IT");
-        File file = new File("/opt/tomcat/data/"+fileMD.get(session.getId()).get(0).fileName);
+        File file = new File("/opt/tomcat/data/"+(fileMD.get((String)session.getUserProperties().get("userId")).get(0)).getFileName());
         try (FileOutputStream fileOuputStream = new FileOutputStream(file)) {
             fileOuputStream.write(message);
             System.out.println(message.toString());
@@ -83,9 +89,11 @@ public class WebSocketServer {
         }
 
 
-        // Distribution Algorithm
+        // Distribution =========================================================================
 
-        broadcast(session,fileMD.get(session.getUserProperties().get("userId")).get(0).fileName);
+
+        //========================================================================================
+        broadcast(session,fileMD.get(session.getUserProperties().get("userId")).get(0).getFileName());
         fileMD.get(session.getUserProperties().get("userId")).remove(0);
         LOGGER.info("DONE");
     }
@@ -107,18 +115,14 @@ public class WebSocketServer {
         if(messageType.compareToIgnoreCase("fileUpload")==0){
             // Logic for File Distribution
             LOGGER.info("messagetype: "+(String)jsonObject.get("messageType"));
-            //fileMD.put(session.getId(),new fileMetaData())
             JSONArray arr=(JSONArray)jsonObject.get("files");
             Iterator i = arr.iterator();
             System.out.println(arr);
             fileMD.put((String)session.getUserProperties().get("userId"),new ArrayList<fileMetaData>());
             while (i.hasNext()) {
-                // System.out.println(i.next());
                 JSONObject file=(JSONObject)i.next();
-                // Here I try to take the title element from my slide but it doesn't work!
                 String title = (String) file.get("fileName");
-                // Logger.info(title.split(".")[0]);
-                LOGGER.info(title.substring(title.indexOf("."),title.length()));
+                LOGGER.info("fileName"+title.substring(title.indexOf("."),title.length()));
                 try{
                     fileMD.get((String)(String)session.getUserProperties().get("userId")).add(new fileMetaData((String) file.get("fileName"),fileMetaData.RandomString(),(long)file.get("fileSize")));
                 }catch(Exception e){
@@ -129,7 +133,7 @@ public class WebSocketServer {
         }
         else if(messageType.compareToIgnoreCase("metaData")==0){
             session.getUserProperties().put("userId",(String)jsonObject.get("userId"));
-            clientDistAlgo.put((String)jsonObject.get("userId"),new DistributionAlgo((int)jsonObject.get("storage"),(double)jsonObject.get("rating"),(double)jsonObject.get("onlinePercent")));
+            clientData.put((String)jsonObject.get("userId"),new DistributionAlgo((int)jsonObject.get("storage"),(double)jsonObject.get("rating"),(double)jsonObject.get("onlinePercent")));
         }
 
         // LOGGER.info("Test:"+(String)jsonObject.get("test"));

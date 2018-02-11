@@ -10,6 +10,8 @@ public class Block implements Serializable {
     private String hash;
     private String previousHash;
     private String creator;
+    private String peerId;
+    private String fileId;
 
     // for jackson
     public Block() {
