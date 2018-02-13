@@ -27,11 +27,15 @@ public class Blockchain {
     public Blockchain() {
     }
 
-    Blockchain(final String name, final String address,  final Block root, final List<Blockchain> agents) {
+    Blockchain(final String name, final String address,  final Block root) {
         this.name = name;
         this.address = address;
-        this.peers = agents;
+        //this.peers = agents;
         blockchain.add(root);
+    }
+
+    public void addAgents(String agentId){
+
     }
 
     public String getName() {
@@ -46,7 +50,7 @@ public class Blockchain {
         return blockchain;
     }
 
-    Block createBlock() {
+    Block createBlock(String fileId,String peerId) {
         if (blockchain.isEmpty()) {
             return null;
         }
@@ -57,7 +61,7 @@ public class Blockchain {
         }
 
         final int index = previousBlock.getIndex() + 1;
-        final Block block = new Block(index, previousBlock.getHash(), name);
+        final Block block = new Block(index, previousBlock.getHash(), name, fileId, peerId);
         LOGGER.info(String.format("%s created new block %s", name, block.toString()));
         return block;
     }
@@ -68,7 +72,7 @@ public class Blockchain {
         }
     }
 
-    private Block getLatestBlock() {
+     Block getLatestBlock() {
         if (blockchain.isEmpty()) {
             return null;
         }

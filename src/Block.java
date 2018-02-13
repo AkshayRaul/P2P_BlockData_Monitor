@@ -23,8 +23,9 @@ public class Block implements Serializable {
                 "index=" + index +
                 ", timestamp=" + timestamp +
                 ", creator=" + creator +
-//                ", hash='" + hash + '\'' +
-//                ", previousHash='" + previousHash + '\'' +
+                ", hash='" + hash + '\'' +
+                ", previousHash='" + previousHash + '\'' +
+                ", fileId"+fileId+", peerId"+peerId+
                 '}';
     }
 
@@ -54,12 +55,22 @@ public class Block implements Serializable {
         return result;
     }
 
-    public Block(int index, String preHash, String creator) {
+    public Block(int index, String preHash, String creator, String fileId, String peerId) {
         this.index = index;
         this.previousHash = preHash;
         this.creator = creator;
+        this.fileId = fileId;
+        this.peerId= peerId;
         timestamp = System.currentTimeMillis();
         hash = calculateHash(String.valueOf(index) + previousHash + String.valueOf(timestamp));
+    }
+
+    public String getFileId(){
+        return fileId;
+    }
+
+    public String getPeer(){
+        return peerId;
     }
 
     public String getCreator() {

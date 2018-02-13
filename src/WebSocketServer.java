@@ -47,7 +47,6 @@ public class WebSocketServer {
         return clients;
     }
     public void finalize(){
-
     }
     @OnOpen
     public void onOpen(Session session,EndpointConfig config) throws IOException {
@@ -63,14 +62,10 @@ public class WebSocketServer {
                 LOGGER.info(val);
             }
         }
-
         LOGGER.info(session.getId());
         clients.add(session);
         LOGGER.info("client connections:"+clients.size());
-
         // session.getBasicRemote().sendText("");
-
-
     }
 
     @OnMessage
@@ -90,12 +85,36 @@ public class WebSocketServer {
 
 
         // Distribution =========================================================================
-        new DistributionAlgo().distribute();
+        String s=new DistributionAlgo().distribute((String)session.getUserProperties().get("userId"));
+        BlockchainServer bcs=new BlockchainServer();
+		Blockchain bc=new Blockchain();
+        String appId=(String)session.getUserProperties().get("userId");
+		if(bcs.getAgent(appId)==null){
+			bcs.addAgent(appId);
+		}else{
+			 bc=bcs.getAgent(appId);
+			bc.addBlock(bcs.createBlock(appId,fileMD.get((String)session.getUserProperties().get("userId")).get(0).getFileId(),s));
+		}
+		try{
+		    String filename= "/opt/tomcat/data/Blockchain/blockchain.csv";
+		    FileWriter fw = new FileWriter(filename,true); //the true will append the new data
+            Block block= bc.getLatestBlock();
+			String newBlock="\n"+block.getTimestamp()+","+block.getHash()+","+block.getPreviousHash()+","+appId+","+block.getPeer()+","+block.getFileId();
+		    fw.write(newBlock);//appends the string to the file
+		    fw.close();
+		}
+		catch(IOException ioe){
+		    System.err.println("IOException: " + ioe.getMessage());
+		}
+        finally{
+            //fw.close();
+        }
         //========================================================================================
         broadcast(session,fileMD.get(session.getUserProperties().get("userId")).get(0).getFileName());
         fileMD.get(session.getUserProperties().get("userId")).remove(0);
         LOGGER.info("DONE");
     }
+
     @OnMessage
     public void onMessage(Session session, String message) throws IOException {
 

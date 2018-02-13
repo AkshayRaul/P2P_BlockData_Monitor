@@ -8,15 +8,19 @@ import java.util.logging.*;
 public class BlockchainServer {
 
     private List<Blockchain> agents = new ArrayList<>();
-    private static final Block root = new Block(0, "ROOT_HASH", "ROOT");
+    private static final Block root = new Block(0, "ROOT_HASH", "ROOT","ROOT_ID","ROOT_PEER");
     private final static Logger LOGGER = Logger.getLogger("BlockchainServer");
 
     public Blockchain addAgent(String name) {
-        Blockchain a = new Blockchain(name, "localhost", root, agents);
+        Blockchain a = new Blockchain(name, "localhost", root);
         agents.add(a);
         return a;
     }
-
+    public Blockchain addAgent(String name,String ipAddress) {
+        Blockchain a = new Blockchain(name, ipAddress, root);
+        agents.add(a);
+        return a;
+    }
     public Blockchain getAgent(String name) {
         for (Blockchain a : agents) {
             if (a.getName().equals(name)) {
@@ -49,10 +53,10 @@ public class BlockchainServer {
         agents.clear();
     }
 
-    public Block createBlock(final String name) {
+    public Block createBlock(final String name,final String fileId,final String peerId) {
         final Blockchain blockchain = getAgent(name);
         if (blockchain != null) {
-            return blockchain.createBlock();
+            return blockchain.createBlock(fileId,peerId);
         }
         return null;
     }

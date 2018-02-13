@@ -86,6 +86,7 @@ Send the JSON data to server in these formats only
   "messageType":"metaData"
   "ipAddress":"",
   "storageSpace":""
+  "userId":""
 }
 ```
 Server Sends data to destination node for file Upload

@@ -3,35 +3,35 @@ import java.util.*;
 
 public class fileMetaData{
     String fileName;
-    String fileID;
+    String fileId;
     long fileSize;
     String fileType;
     String mimeType;
 
     fileMetaData(){
         this.fileName="test";
-        this.fileID="";
+        this.fileId="";
         this.fileSize=-1;
         this.fileType="null";
         this.mimeType="null";
     }
-    fileMetaData(String fileName,String fileID,long fileSize,String fileType,String mimeType){
+    fileMetaData(String fileName,String fileId,long fileSize,String fileType,String mimeType){
         this.fileName=fileName;
-        this.fileID=fileID;
+        this.fileId=fileId;
         this.fileSize=fileSize;
         this.fileType=fileType;
         this.mimeType=mimeType;
     }
-    fileMetaData(String fileName,String fileID,long fileSize,String fileType){
+    fileMetaData(String fileName,String fileId,long fileSize,String fileType){
         this.fileName=fileName;
-        this.fileID=fileID;
+        this.fileId=fileId;
         this.fileSize=fileSize;
         this.fileType=fileType;
         this.mimeType="null";
     }
-    fileMetaData(String fileName,String fileID,long fileSize){
+    fileMetaData(String fileName,String fileId,long fileSize){
         this.fileName=fileName;
-        this.fileID=fileID;
+        this.fileId=fileId;
         this.fileSize=fileSize;
         this.fileType=fileName.substring(fileName.indexOf("."),fileName.length());
         this.mimeType="null";
@@ -39,8 +39,8 @@ public class fileMetaData{
     String getFileName(){
         return this.fileName;
     }
-    String getFileID(){
-        return this.fileID;
+    String getFileId(){
+        return this.fileId;
     }
     long getFileSize(){
         return this.fileSize;
