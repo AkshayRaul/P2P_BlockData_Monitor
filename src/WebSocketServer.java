@@ -39,6 +39,7 @@ public class WebSocketServer {
     static HashMap<String,DistributionAlgo> clientData= new HashMap<String,DistributionAlgo>();
     public static HashMap<String, ArrayList<fileMetaData>> fileMD = new  HashMap<String,ArrayList<fileMetaData>>();
     private final static Logger LOGGER = Logger.getLogger("Websocketserver");
+    static BlockchainServer bcs=new BlockchainServer();
 
     static HashMap<String,DistributionAlgo> getClientData(){
         return clientData;
@@ -51,7 +52,6 @@ public class WebSocketServer {
     @OnOpen
     public void onOpen(Session session,EndpointConfig config) throws IOException {
         // Get session and WebSocket connection
-        System.gc();
         HandshakeRequest request=(HandshakeRequest)session.getUserProperties().get("request");
         Map<String,List<String>> headers=request.getHeaders();
         Set<String> keys=headers.keySet();
@@ -78,7 +78,7 @@ public class WebSocketServer {
         File file = new File("/opt/tomcat/data/"+(fileMD.get((String)session.getUserProperties().get("userId")).get(0)).getFileName());
         try (FileOutputStream fileOuputStream = new FileOutputStream(file)) {
             fileOuputStream.write(message);
-            System.out.println(message.toString());
+            LOGGER.info(message.toString());
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -86,38 +86,56 @@ public class WebSocketServer {
 
         // Distribution =========================================================================
         String s=new DistributionAlgo().distribute((String)session.getUserProperties().get("userId"));
-        BlockchainServer bcs=new BlockchainServer();
+
 		Blockchain bc=new Blockchain();
         String appId=(String)session.getUserProperties().get("userId");
-		if(bcs.getAgent(appId)==null){
-			bcs.addAgent(appId);
-		}else{
-			 bc=bcs.getAgent(appId);
-			bc.addBlock(bcs.createBlock(appId,fileMD.get((String)session.getUserProperties().get("userId")).get(0).getFileId(),s));
-		}
+
 		try{
+            //LOGGER.info("GETAGENT"+bcs.getAgent(appId).toString());
+            List<Blockchain> agents=bcs.getAllAgents();
+            for(Blockchain agent:agents){
+                LOGGER.info("Agent"+agent);
+            }
+            if(bcs.getAgent(appId)==null){
+                LOGGER.info("AGENT DOESNT EXIST");
+    			bc=bcs.addAgent(appId);
+                bc.addBlock(bc.createBlock(fileMD.get((String)session.getUserProperties().get("userId")).get(0).getFileId(),s));
+                LOGGER.info(bc.toString());
+    		}else{
+                LOGGER.info("AGENT EXISTS");
+    			bc=bcs.getAgent(appId);
+    			bc.addBlock(bc.createBlock(fileMD.get((String)session.getUserProperties().get("userId")).get(0).getFileId(),s));
+                LOGGER.info("BLockADDED");
+    		}
 		    String filename= "/opt/tomcat/data/Blockchain/blockchain.csv";
 		    FileWriter fw = new FileWriter(filename,true); //the true will append the new data
             Block block= bc.getLatestBlock();
-			String newBlock="\n"+block.getTimestamp()+","+block.getHash()+","+block.getPreviousHash()+","+appId+","+block.getPeer()+","+block.getFileId();
+			String newBlock="\n"+block.getIndex()+","+block.getTimestamp()+","+block.getHash()+","+block.getPreviousHash()+","+appId+","+block.getPeer()+","+block.getFileId();
+            LOGGER.info("String:"+newBlock);
 		    fw.write(newBlock);//appends the string to the file
 		    fw.close();
 		}
-		catch(IOException ioe){
-		    System.err.println("IOException: " + ioe.getMessage());
+		catch(Exception ioe){
+		    ioe.printStackTrace();
 		}
         finally{
             //fw.close();
         }
         //========================================================================================
-        broadcast(session,fileMD.get(session.getUserProperties().get("userId")).get(0).getFileName());
+        //broadcast(session,fileMD.get(session.getUserProperties().get("userId")).get(0).getFileName());
+        JSONObject jsonObject=new JSONObject();
+        jsonObject.put("owner",fileMD.get((String)session.getUserProperties().get("userId")));
+        jsonObject.put("fileName",fileMD.get((String)session.getUserProperties().get("userId")).get(0).getFileName());
+        jsonObject.put("fileId",fileMD.get((String)session.getUserProperties().get("userId")).get(0).getFileId());
+        jsonObject.put("fileSize",fileMD.get((String)session.getUserProperties().get("userId")).get(0).getFileSize());
+        //session.getBasicRemote().send(jsonObject);
         fileMD.get(session.getUserProperties().get("userId")).remove(0);
         LOGGER.info("DONE");
     }
 
     @OnMessage
     public void onMessage(Session session, String message) throws IOException {
-
+        LOGGER.info(message);
         JSONParser jsonParser = new JSONParser();
         JSONObject jsonObject=new JSONObject();
         try{
@@ -142,7 +160,7 @@ public class WebSocketServer {
                 String title = (String) file.get("fileName");
                 LOGGER.info("fileName"+title.substring(title.indexOf("."),title.length()));
                 try{
-                    fileMD.get((String)(String)session.getUserProperties().get("userId")).add(new fileMetaData((String) file.get("fileName"),fileMetaData.RandomString(),(long)file.get("fileSize")));
+                    fileMD.get((String)session.getUserProperties().get("userId")).add(new fileMetaData((String) file.get("fileName"),fileMetaData.RandomString(),(long)file.get("fileSize")));
                 }catch(Exception e){
                     e.printStackTrace();
                 }
@@ -150,8 +168,9 @@ public class WebSocketServer {
             }
         }
         else if(messageType.compareToIgnoreCase("metaData")==0){
+
             session.getUserProperties().put("userId",(String)jsonObject.get("userId"));
-            clientData.put((String)jsonObject.get("userId"),new DistributionAlgo((int)jsonObject.get("storage"),(double)jsonObject.get("rating"),(double)jsonObject.get("onlinePercent")));
+            clientData.put((String)jsonObject.get("userId"),new DistributionAlgo((Double)jsonObject.get("storage"),(Double)jsonObject.get("rating"),(Long)jsonObject.get("onlinePercent")));
         }
 
         // LOGGER.info("Test:"+(String)jsonObject.get("test"));

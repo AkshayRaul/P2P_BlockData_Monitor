@@ -7,7 +7,7 @@ import java.util.logging.*;
 
 public class BlockchainServer {
 
-    private List<Blockchain> agents = new ArrayList<>();
+    private List<Blockchain> agents = new ArrayList<Blockchain>();
     private static final Block root = new Block(0, "ROOT_HASH", "ROOT","ROOT_ID","ROOT_PEER");
     private final static Logger LOGGER = Logger.getLogger("BlockchainServer");
 
@@ -23,7 +23,8 @@ public class BlockchainServer {
     }
     public Blockchain getAgent(String name) {
         for (Blockchain a : agents) {
-            if (a.getName().equals(name)) {
+            if (a.getName().compareTo(name)==0) {
+                LOGGER.info("TRUE");
                 return a;
             }
         }

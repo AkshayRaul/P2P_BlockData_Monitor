@@ -39,7 +39,7 @@ import javax.websocket.Session;
 // }
 
 public class DistributionAlgo  {
-	private int storage;
+	private double storage;
 	private double rating;
 	private double onlinePercent;
 	private ArrayList<Session> clients;
@@ -49,7 +49,7 @@ public class DistributionAlgo  {
 
 	}
 
-	DistributionAlgo(int storage,double rating,double onlinePercent){
+	DistributionAlgo(double storage,double rating,double onlinePercent){
 		this.storage=storage;
 		this.rating=rating;
 		this.onlinePercent=onlinePercent;
