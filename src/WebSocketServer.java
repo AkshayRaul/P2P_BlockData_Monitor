@@ -81,6 +81,7 @@ public class WebSocketServer {
         LOGGER.severe("message from "+session.getId());
         //Upload bits 11   & Download bits 00 to be prefixed to the ByteArray
         if(message[0]==1&&message[1]==1){
+	    LOGGER.info("Upload");
             File file = new File("/opt/tomcat/data/"+(fileMD.get((String)session.getUserProperties().get("userId")).get(0)).getFileName());
             try (FileOutputStream fileOuputStream = new FileOutputStream(file)) {
                 fileOuputStream.write(message);
@@ -136,6 +137,7 @@ public class WebSocketServer {
             fileMD.get(session.getUserProperties().get("userId")).remove(0);
             LOGGER.info("DONE");
         }else{
+	    LOGGER.info("Download");
             byte[] c = new byte[message.length-1];
             System.arraycopy(message, 2, c, 0, message.length-2);
             File file = new File("/opt/tomcat/data/"+(fileMD.get((String)session.getUserProperties().get("userId")).get(0)).getFileName());
