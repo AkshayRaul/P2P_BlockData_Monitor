@@ -28,6 +28,8 @@ import javax.websocket.server.ServerEndpointConfig;
 /*
 * @WebServlet indicates the url of this file (ex: localhost:8080/WSTest/ws)
 */
+
+
 @ServerEndpoint(value="/ws/", configurator=HttpSessionConfigurator.class)
 public class WebSocketServer {
 
@@ -35,7 +37,9 @@ public class WebSocketServer {
     private static final long serialVersionUID = 1L;
     static int count=0;
     private Session session;
+    private static ArrayList<PushFile> pf=new ArrayList<PushFile>();
     private static ArrayList<Session> clients = new ArrayList<Session>();
+    private static HashMap<String,Session> sessions = new HashMap<String,Session>();
     static HashMap<String,DistributionAlgo> clientData= new HashMap<String,DistributionAlgo>();
     public static HashMap<String, ArrayList<fileMetaData>> fileMD = new  HashMap<String,ArrayList<fileMetaData>>();
     private final static Logger LOGGER = Logger.getLogger("Websocketserver");
@@ -63,6 +67,7 @@ public class WebSocketServer {
             }
         }
         LOGGER.info(session.getId());
+
         clients.add(session);
         LOGGER.info("client connections:"+clients.size());
         // session.getBasicRemote().sendText("");
@@ -74,63 +79,85 @@ public class WebSocketServer {
         // String jsonText = JSONValue.toJSONString(obj);
         // For file transfers only
         LOGGER.severe("message from "+session.getId());
-        //session.getBasicRemote().sendText("GOT IT");
-        File file = new File("/opt/tomcat/data/"+(fileMD.get((String)session.getUserProperties().get("userId")).get(0)).getFileName());
-        try (FileOutputStream fileOuputStream = new FileOutputStream(file)) {
-            fileOuputStream.write(message);
-            LOGGER.info(message.toString());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-
-        // Distribution =========================================================================
-        String s=new DistributionAlgo().distribute((String)session.getUserProperties().get("userId"));
-
-		Blockchain bc=new Blockchain();
-        String appId=(String)session.getUserProperties().get("userId");
-
-		try{
-            //LOGGER.info("GETAGENT"+bcs.getAgent(appId).toString());
-            List<Blockchain> agents=bcs.getAllAgents();
-            for(Blockchain agent:agents){
-                LOGGER.info("Agent"+agent);
+        //Upload bits 11   & Download bits 00 to be prefixed to the ByteArray
+        if(message[0]==1&&message[1]==1){
+            File file = new File("/opt/tomcat/data/"+(fileMD.get((String)session.getUserProperties().get("userId")).get(0)).getFileName());
+            try (FileOutputStream fileOuputStream = new FileOutputStream(file)) {
+                fileOuputStream.write(message);
+                LOGGER.info(message.toString());
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-            if(bcs.getAgent(appId)==null){
-                LOGGER.info("AGENT DOESNT EXIST");
-    			bc=bcs.addAgent(appId);
-                bc.addBlock(bc.createBlock(fileMD.get((String)session.getUserProperties().get("userId")).get(0).getFileId(),s));
-                LOGGER.info(bc.toString());
-    		}else{
-                LOGGER.info("AGENT EXISTS");
-    			bc=bcs.getAgent(appId);
-    			bc.addBlock(bc.createBlock(fileMD.get((String)session.getUserProperties().get("userId")).get(0).getFileId(),s));
-                LOGGER.info("BLockADDED");
-    		}
-		    String filename= "/opt/tomcat/data/Blockchain/blockchain.csv";
-		    FileWriter fw = new FileWriter(filename,true); //the true will append the new data
-            Block block= bc.getLatestBlock();
-			String newBlock="\n"+block.getIndex()+","+block.getTimestamp()+","+block.getHash()+","+block.getPreviousHash()+","+appId+","+block.getPeer()+","+block.getFileId();
-            LOGGER.info("String:"+newBlock);
-		    fw.write(newBlock);//appends the string to the file
-		    fw.close();
-		}
-		catch(Exception ioe){
-		    ioe.printStackTrace();
-		}
-        finally{
-            //fw.close();
+            // Distribution =========================================================================
+            String s=new DistributionAlgo().distribute((String)session.getUserProperties().get("userId"));
+
+            Blockchain bc=new Blockchain();
+            String appId=(String)session.getUserProperties().get("userId");
+
+            try{
+                //LOGGER.info("GETAGENT"+bcs.getAgent(appId).toString());
+                List<Blockchain> agents=bcs.getAllAgents();
+                for(Blockchain agent:agents){
+                    LOGGER.info("Agent"+agent);
+                }
+                if(bcs.getAgent(appId)==null){
+                    LOGGER.info("AGENT DOESNT EXIST");
+                    bc=bcs.addAgent(appId);
+                    bc.addBlock(bc.createBlock(fileMD.get((String)session.getUserProperties().get("userId")).get(0).getFileId(),s));
+                    LOGGER.info(bc.toString());
+                }else{
+                    LOGGER.info("AGENT EXISTS");
+                    bc=bcs.getAgent(appId);
+                    bc.addBlock(bc.createBlock(fileMD.get((String)session.getUserProperties().get("userId")).get(0).getFileId(),s));
+                    LOGGER.info("BLockADDED");
+                }
+                String filename= "/opt/tomcat/data/Blockchain/blockchain.csv";
+                FileWriter fw = new FileWriter(filename,true); //the true will append the new data
+                Block block= bc.getLatestBlock();
+                String newBlock="\n"+block.getIndex()+","+block.getTimestamp()+","+block.getHash()+","+block.getPreviousHash()+","+appId+","+block.getPeer()+","+block.getFileId();
+                LOGGER.info("String:"+newBlock);
+                fw.write(newBlock);//appends the string to the file
+                fw.close();
+            }
+            catch(Exception ioe){
+                ioe.printStackTrace();
+            }
+            finally{
+                //fw.close();
+            }
+            //========================================================================================
+            //broadcast(session,fileMD.get(session.getUserProperties().get("userId")).get(0).getFileName());
+            JSONObject jsonObject=new JSONObject();
+            jsonObject.put("owner",fileMD.get((String)session.getUserProperties().get("userId")));
+            jsonObject.put("fileName",fileMD.get((String)session.getUserProperties().get("userId")).get(0).getFileName());
+            jsonObject.put("fileId",fileMD.get((String)session.getUserProperties().get("userId")).get(0).getFileId());
+            jsonObject.put("fileSize",fileMD.get((String)session.getUserProperties().get("userId")).get(0).getFileSize());
+            //session.getBasicRemote().send(jsonObject);
+            fileMD.get(session.getUserProperties().get("userId")).remove(0);
+            LOGGER.info("DONE");
+        }else{
+            byte[] c = new byte[message.length-1];
+            System.arraycopy(message, 2, c, 0, message.length-2);
+            File file = new File("/opt/tomcat/data/"+(fileMD.get((String)session.getUserProperties().get("userId")).get(0)).getFileName());
+            try (FileOutputStream fileOuputStream = new FileOutputStream(file)) {
+                fileOuputStream.write(c);
+                LOGGER.info(message.toString());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            for(int i=0;i<pf.size();i++){
+                if((pf.get(i).from).compareTo((String)session.getUserProperties().get("userId"))==0){
+                    File f=new File("/opt/tomcat/data/"+pf.get(i).fileId);
+                    byte[] bytes=new byte[(int)f.length()];
+                    FileInputStream fileStream= new FileInputStream(f);
+                    fileStream.read(bytes);
+                    (sessions.get(pf.get(i).to)).getBasicRemote().sendBinary(ByteBuffer.wrap(bytes));
+                    pf.remove(i);
+                    break;
+                }
+            }
         }
-        //========================================================================================
-        //broadcast(session,fileMD.get(session.getUserProperties().get("userId")).get(0).getFileName());
-        JSONObject jsonObject=new JSONObject();
-        jsonObject.put("owner",fileMD.get((String)session.getUserProperties().get("userId")));
-        jsonObject.put("fileName",fileMD.get((String)session.getUserProperties().get("userId")).get(0).getFileName());
-        jsonObject.put("fileId",fileMD.get((String)session.getUserProperties().get("userId")).get(0).getFileId());
-        jsonObject.put("fileSize",fileMD.get((String)session.getUserProperties().get("userId")).get(0).getFileSize());
-        //session.getBasicRemote().send(jsonObject);
-        fileMD.get(session.getUserProperties().get("userId")).remove(0);
-        LOGGER.info("DONE");
+
     }
 
     @OnMessage
@@ -168,19 +195,27 @@ public class WebSocketServer {
             }
         }
         else if(messageType.compareToIgnoreCase("metaData")==0){
-
             session.getUserProperties().put("userId",(String)jsonObject.get("userId"));
+            sessions.put((String)jsonObject.get("userId"),session);
             clientData.put((String)jsonObject.get("userId"),new DistributionAlgo((Double)jsonObject.get("storage"),(Double)jsonObject.get("rating"),(Long)jsonObject.get("onlinePercent")));
         }
+        else if(messageType.compareToIgnoreCase("fetchFile")==0){
+            Session fetchSession=sessions.get((String)jsonObject.get("peerId"));
+            JSONObject file=new JSONObject();
+            file.put("fileId",(String)jsonObject.get("fileId"));
+            file.put("peerId",(String)jsonObject.get("peerId"));
+            pf.add(new PushFile((String)session.getUserProperties().get("userId"),(String)jsonObject.get("peerId"),(String)jsonObject.get("fileId")));
+            fetchSession.getBasicRemote().sendText(file.toString());
+        }
 
-        // LOGGER.info("Test:"+(String)jsonObject.get("test"));
-        // LOGGER.info("JSON:"+(String)jsonObject.get("messageType"));
+
+
         try{
-            // session.getBasicRemote().sendObject((Object)jsonObject);
+
         }catch(Exception e){
 
         }
-        session.getBasicRemote().sendText(message);
+
     }
 
     @OnClose

@@ -7,6 +7,7 @@ public class fileMetaData{
     long fileSize;
     String fileType;
     String mimeType;
+    String owner;
 
     fileMetaData(){
         this.fileName="test";
