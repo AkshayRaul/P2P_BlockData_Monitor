@@ -7,11 +7,16 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse; 
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.impl.crypto.MacProvider;
+import java.security.Key;
+
 public class LoginServlet extends HttpServlet{
 	//boolean auth;MongoClient mongo;  MongoDatabase db;
 	
 	public void doGet(HttpServletRequest req,HttpServletResponse res) throws ServletException,IOException
-	{  System.out.println("do get called");
+	{  //System.out.println("do get called");
 		boolean flag=false;
 		String username=req.getParameter("user");
 		String pass=req.getParameter("pass");
@@ -23,7 +28,15 @@ public class LoginServlet extends HttpServlet{
 
 				if(data[1].equalsIgnoreCase(username) && data[2].equalsIgnoreCase(pass)){
 					flag=true;
-					p.println("Succesfull");
+					//p.println("Succesfull");
+
+					String compactJws = Jwts.builder()
+					  .setSubject(data[1])
+					  .signWith(SignatureAlgorithm.HS512,data[0])
+					  .compact();
+
+					  p.println(compactJws);
+					 
 				}
 			}
 			if(!flag){
