@@ -5,8 +5,11 @@ All you need to know about Java Websockets API, Please study these classes caref
 
 [https://docs.oracle.com/javaee/7/api/javax/websocket/package-summary.html](https://docs.oracle.com/javaee/7/api/javax/websocket/package-summary.html "JAVA EE WebSockets Specification")
 
-[![Build Status](https://img.shields.io/circleci/project/github/ntkme/github-buttons.svg)](https://travis-ci.org/Netflix/fast_jsonapi)
 https://jar-download.com/explore-java-source-code.php?a=jjwt&g=io.jsonwebtoken&v=0.9.0&downloadable=1
+
+
+[![Build Status](https://img.shields.io/circleci/project/github/ntkme/github-buttons.svg)](https://travis-ci.org/Netflix/fast_jsonapi)
+
 
 # ToDo List
 ----------
