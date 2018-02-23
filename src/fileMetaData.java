@@ -43,6 +43,9 @@ public class fileMetaData{
     String getFileId(){
         return this.fileId;
     }
+    String getFileType(){
+        return this.fileType;
+    }
     long getFileSize(){
         return this.fileSize;
     }

@@ -10,7 +10,9 @@ All you need to know about Java Websockets API, Please study these classes caref
 https://jar-download.com/explore-java-source-code.php?a=jjwt&g=io.jsonwebtoken&v=0.9.0&downloadable=1
 
 
-http://www.java2s.com/Code/Jar/j/Downloadjsonjar.htm
+http://www.java2s.com/Code/Jar/j/Downloadjsonjar.htm <br>
+OR<br>
+http://www.java2s.com/Code/Jar/j/Downloadjsonsimple11jar.htm
 
 
 [![Build Status](https://img.shields.io/circleci/project/github/ntkme/github-buttons.svg)](https://travis-ci.org/Netflix/fast_jsonapi)
@@ -18,17 +20,21 @@ http://www.java2s.com/Code/Jar/j/Downloadjsonjar.htm
 
 # ToDo List
 ----------
-+ Send file data to server as per Specification below
++ ~~Send file data to server as per Specification below~~
 + Create a service for the app which runs even after app is Closed
-+ Handle nanoHTTP Server errors
-+ Authentication using key exchange
++ ~~Handle nanoHTTP Server errors~~
++ ~~Authentication using key exchange~~
 + Server Side Authentication
-+ Create Blockchain and save data on a file/csv/json
++ ~~Create Blockchain and save data on a file/csv/json~~
 + Send file permissions
-+ Broadcast ledgers
++ ~~Broadcast ledgers~~
 + Check ledgers
 
+## File Upload format
 
+Prefix ```11``` while uploading file to server
+<br>Server changes ```11``` to ```00``` while distributing file
+<br> Use Prefix ```01``` while broadcasting ledger from server
 
 # ServerSide get HTTP Headers
 -------------
