@@ -57,13 +57,7 @@ public class DistributionAlgo  {
 	public String distribute(String appId){
 		HashMap<String,DistributionAlgo> clientData=WebSocketServer.getClientData();
 		clients=WebSocketServer.getOpenSessions();
-		// Collections.sort(clients,new SortByRating());
-		// for(int i=0;i<5;i++){
-		// 	bestPeersRating[i]=clients.get(i);
-		// }
-		// for(int i=0;i<5;i++){
-		// 	bestPeersStorage[i]=clients.get(i);
-		// }
+		
 		String ret=(String)clients.get(0).getUserProperties().get("userId");
 		return ret;
 	}

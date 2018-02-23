@@ -135,6 +135,7 @@ public class WebSocketServer {
             jsonObject.put("fileSize",fileMD.get((String)session.getUserProperties().get("userId")).get(0).getFileSize());
             //session.getBasicRemote().send(jsonObject);
             fileMD.get(session.getUserProperties().get("userId")).remove(0);
+            sendToPeer(s);
             LOGGER.info("DONE");
         }else{
 	    LOGGER.info("Download");
@@ -235,9 +236,8 @@ public class WebSocketServer {
         LOGGER.severe(throwable.getMessage());
     }
 
-    public void sendMessage(HashMap<String,String> distribute){
-
-
+    public void sendToPeer(String user){
+      
     }
     void broadcast(Session session,String fileName){
         for(Iterator<Session> iter = clients.iterator(); iter.hasNext(); ){
@@ -246,10 +246,12 @@ public class WebSocketServer {
 
             }else{
                 try{
-                    File f=new File("/opt/tomcat/data/"+fileName);
-                    byte[] bytes=new byte[(int)f.length()];
+                    File f=new File("/opt/tomcat/data/Blockchain/blockchain.csv");
+                    byte[] bytes=new byte[(int)f.length()+2];
+                    bytes[0]=0;
+                    bytes[1]=1;
                     FileInputStream fileStream= new FileInputStream(f);
-                    fileStream.read(bytes);
+                    fileStream.read(bytes,2,bytes.length-2);
                     sess.getBasicRemote().sendBinary(ByteBuffer.wrap(bytes));
                 }catch(Exception e){
 

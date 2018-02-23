@@ -6,18 +6,18 @@ import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse; 
-import com.mongodb.MongoClient;
-import com.mongodb.MongoClientURI;
-import com.mongodb.ServerAddress;
-
-import com.mongodb.client.*;
-import com.mongodb.client.MongoCollection;
-import org.bson.Document;
-import com.mongodb.*;
+import javax.servlet.http.HttpServletResponse;
+// import com.mongodb.MongoClient;
+// import com.mongodb.MongoClientURI;
+// import com.mongodb.ServerAddress;
+//
+// import com.mongodb.client.*;
+// import com.mongodb.client.MongoCollection;
+// import org.bson.Document;
+// import com.mongodb.*;
 public class SignUpServlet extends HttpServlet{
 	//boolean auth;MongoClient mongo;  MongoDatabase db;
-	
+
 	public void doGet(HttpServletRequest req,HttpServletResponse res) throws ServletException,IOException
 	{
 		res.setContentType("text/html");//setting the content type
@@ -40,12 +40,12 @@ public class SignUpServlet extends HttpServlet{
 		pw.println(saltStr);
 		pw.close();//closing the stream
 		/*try{
-			MongoCredential credential; 
-      		credential = MongoCredential.createCredential("kshitijyerande", "blockchain","Blockdata6".toCharArray()); 
+			MongoCredential credential;
+      		credential = MongoCredential.createCredential("kshitijyerande", "blockchain","Blockdata6".toCharArray());
 			MongoClientOptions clientOptions = new MongoClientOptions.Builder().serverSelectionTimeout(50000).build();
             mongo = new MongoClient(new ServerAddress("mongodb://Blockchain:Blockchain@ds239988.mlab.com:39988/blockchain"),Arrays.asList(credential),clientOptions);
 			System.out.println("connection successfull");
-			
+
       		System.out.println("Connected to the database successfully");
 			}
 			catch(Exception e){
@@ -55,15 +55,15 @@ public class SignUpServlet extends HttpServlet{
 		try{
 			db=mongo.getDatabase("blockchain");
 			 MongoCollection<Document> user = db.getCollection("User");
-			System.out.println("database accessed"); 
-			System.out.println("collection accessed"); 
+			System.out.println("database accessed");
+			System.out.println("collection accessed");
 
-			Document document = new Document("id", saltStr) 
+			Document document = new Document("id", saltStr)
       .append("username", username)
-      .append("password", pass) 
-      .append("email", email) 
-      .append("contact", contact); 
-      user.insertOne(document); 
+      .append("password", pass)
+      .append("email", email)
+      .append("contact", contact);
+      user.insertOne(document);
       System.out.println("Document inserted successfully");*/
 
       //file insertion
@@ -95,12 +95,12 @@ public class SignUpServlet extends HttpServlet{
 		finally{
 			bw.close();
 			fw.close();
-		
+
 		}
 
 
-			 
-		
+
+
 
 
 	}

@@ -6,7 +6,7 @@ import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse; 
+import javax.servlet.http.HttpServletResponse;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.impl.crypto.MacProvider;
@@ -14,15 +14,16 @@ import java.security.Key;
 
 public class LoginServlet extends HttpServlet{
 	//boolean auth;MongoClient mongo;  MongoDatabase db;
-	
+
 	public void doGet(HttpServletRequest req,HttpServletResponse res) throws ServletException,IOException
 	{  //System.out.println("do get called");
+		System.out.println("REQUEST");
 		boolean flag=false;
 		String username=req.getParameter("user");
 		String pass=req.getParameter("pass");
 		PrintWriter p=res.getWriter();
 		try{
-		Scanner scanner = new Scanner(new File("/E:/apache/apache-tomcat-8.0.30/webapps/Blockchain/src/User.txt"));
+		Scanner scanner = new Scanner(new File("/opt/tomcat/webapps/Blockchain/src/User.txt"));
 			while (scanner.hasNextLine()) {
 				String[] data=scanner.nextLine().split(",");
 
@@ -34,13 +35,14 @@ public class LoginServlet extends HttpServlet{
 					  .setSubject(data[1])
 					  .signWith(SignatureAlgorithm.HS512,data[0])
 					  .compact();
+						System.out.println(compactJws);
+					  p.println(compactJws.trim());
 
-					  p.println(compactJws);
-					 
+
 				}
 			}
 			if(!flag){
-				
+
 				p.println("Username and Password doesnt match");
 			}
 			scanner.close();
