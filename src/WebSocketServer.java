@@ -72,7 +72,6 @@ public class WebSocketServer {
         LOGGER.info(session.getId());
         clients.add(session);
         LOGGER.info("client connections:"+clients.size());
-        // session.getBasicRemote().sendText("");
     }
 
     @OnMessage
@@ -139,7 +138,7 @@ public class WebSocketServer {
                     jsonObject.put("fileName",fileMD.get((String)session.getUserProperties().get("userId")).get(0).getFileName());
                     jsonObject.put("fileId",fileMD.get((String)session.getUserProperties().get("userId")).get(0).getFileId());
                     jsonObject.put("fileSize",fileMD.get((String)session.getUserProperties().get("userId")).get(0).getFileSize());
-                    //session.getBasicRemote().send( 
+                    //session.getBasicRemote().send(
                     sendToPeer(s,jsonObject,(fileMD.get((String)session.getUserProperties().get("userId")).get(0)).getFileId()+"."+(fileMD.get((String)session.getUserProperties().get("userId")).get(0)).getFileType());
                     fileMD.get(session.getUserProperties().get("userId")).remove(0);
                     LOGGER.info("DONE");
@@ -215,8 +214,6 @@ public class WebSocketServer {
             Session fetchSession=sessions.get((String)jsonObject.get("peerId"));
             JSONObject file=new JSONObject();
             file.put("fileId",(String)jsonObject.get("fileId"));
-            file.put("fileType",(String)jsonObject.get("fileType"));
-            file.put("peerId",(String)jsonObject.get("peerId"));
             pf.add(new PushFile((String)session.getUserProperties().get("userId"),(String)jsonObject.get("peerId"),(String)jsonObject.get("fileId"),(String)jsonObject.get("fileType")));
             fetchSession.getBasicRemote().sendText(file.toString());
         }
@@ -247,7 +244,7 @@ public class WebSocketServer {
         Session sendToPeer=sessions.get(user);
         File f=new File("/opt/tomcat/data/"+fileName);
         byte[] bytes=new byte[(int)f.length()];
-        bytes[0]=bytes[1]=0;
+
         try{
             sendToPeer.getBasicRemote().sendText(json.toString());
             FileInputStream fileStream= new FileInputStream(f);
