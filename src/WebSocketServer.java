@@ -134,16 +134,18 @@ public class WebSocketServer {
                     //========================================================================================
                     //broadcast(session,fileMD.get(session.getUserProperties().get("userId")).get(0).getFileName());
                     JSONObject jsonObject=new JSONObject();
-                    jsonObject.put("owner",fileMD.get((String)session.getUserProperties().get("userId")));
+                    jsonObject.put("messageType","storage");
+                    jsonObject.put("owner",(String)session.getUserProperties().get("userId"));
                     jsonObject.put("fileName",fileMD.get((String)session.getUserProperties().get("userId")).get(0).getFileName());
                     jsonObject.put("fileId",fileMD.get((String)session.getUserProperties().get("userId")).get(0).getFileId());
                     jsonObject.put("fileSize",fileMD.get((String)session.getUserProperties().get("userId")).get(0).getFileSize());
-                    //session.getBasicRemote().send(jsonObject);
+                    //session.getBasicRemote().send( 
+                    sendToPeer(s,jsonObject,(fileMD.get((String)session.getUserProperties().get("userId")).get(0)).getFileId()+"."+(fileMD.get((String)session.getUserProperties().get("userId")).get(0)).getFileType());
                     fileMD.get(session.getUserProperties().get("userId")).remove(0);
-                    sendToPeer(s,(fileMD.get((String)session.getUserProperties().get("userId")).get(0)).getFileId()+"."+(fileMD.get((String)session.getUserProperties().get("userId")).get(0)).getFileType());
                     LOGGER.info("DONE");
                 }
             });
+		t.start();
 
         }else {
 	    LOGGER.info("Download");
@@ -241,12 +243,13 @@ public class WebSocketServer {
         LOGGER.severe(throwable.getMessage());
     }
 
-    public static void sendToPeer(String user,String fileName){
+    public static void sendToPeer(String user,JSONObject json,String fileName){
         Session sendToPeer=sessions.get(user);
         File f=new File("/opt/tomcat/data/"+fileName);
         byte[] bytes=new byte[(int)f.length()];
         bytes[0]=bytes[1]=0;
         try{
+            sendToPeer.getBasicRemote().sendText(json.toString());
             FileInputStream fileStream= new FileInputStream(f);
             fileStream.read(bytes);
             sendToPeer.getBasicRemote().sendBinary(ByteBuffer.wrap(bytes));
