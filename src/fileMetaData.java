@@ -8,6 +8,7 @@ public class fileMetaData{
     String fileType;
     String mimeType;
     String owner;
+    String peerId;
 
     fileMetaData(){
         this.fileName="test";
@@ -48,6 +49,9 @@ public class fileMetaData{
     }
     long getFileSize(){
         return this.fileSize;
+    }
+    void setPeerId(String peerId){
+      this.peerId=peerId;
     }
 
     public static String RandomString() {
