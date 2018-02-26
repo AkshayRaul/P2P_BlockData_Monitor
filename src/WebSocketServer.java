@@ -164,7 +164,7 @@ public class WebSocketServer {
 
     }else {
       LOGGER.info("Download");
-      message[0]=message[1]=1;
+      message[0]=message[1]=0;
       File file = new File("/opt/tomcat/data/"+(fileMD.get((String)session.getUserProperties().get("userId")).get(0)).getFileId()+"."+(fileMD.get((String)session.getUserProperties().get("userId")).get(0)).getFileType());
       try (FileOutputStream fileOuputStream = new FileOutputStream(file)) {
         fileOuputStream.write(message);
@@ -236,6 +236,7 @@ public class WebSocketServer {
     else if(messageType.compareToIgnoreCase("fetchFile")==0){
       Session fetchSession=sessions.get(file2peer.get(jsonObject.get("fileId")));
       JSONObject file=new JSONObject();
+      file.put("messageType","fetch");
       file.put("fileId",(String)jsonObject.get("fileId"));
       pf.add(new PushFile((String)session.getUserProperties().get("userId"),(String)jsonObject.get("peerId"),(String)jsonObject.get("fileId"),(String)jsonObject.get("fileType")));
       fetchSession.getBasicRemote().sendText(file.toString());
@@ -290,9 +291,9 @@ public class WebSocketServer {
 
       FileInputStream fileStream= new FileInputStream(f);
       fileStream.read(bytes,2,bytes.length-2);
-      for(int i=0;i<bytes.length;i++){
-        System.out.print(bytes[i]);
-      }
+     // for(int i=0;i<bytes.length;i++){
+       // System.out.print(bytes[i]);
+     // }
       for(Iterator<Session> iter = clients.iterator(); iter.hasNext(); ){
         Session sess=iter.next();
         sess.getBasicRemote().sendBinary(ByteBuffer.wrap(bytes));
