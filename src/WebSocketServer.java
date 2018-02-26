@@ -26,6 +26,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.Claims;
 import javax.xml.bind.DatatypeConverter;
+import io.jsonwebtoken.SignatureException;
 //translate bytes of request to string
 
 
@@ -222,14 +223,25 @@ public class WebSocketServer {
       }
     }
     else if(messageType.compareToIgnoreCase("metaData")==0){
-      //       Claims jws=Jwts.parser()
-      //       .setSigningKey(TextCodec.BASE64.decode(
-      // // This generated signing key is
-      // // the proper length for the
-      // // HS256 algorithm.
-      // "TD8Guh82ARO4/jsAkAlfGB1fDy0QL+OmDFFvwrJa8LA=")).parseClaimsJws((String)jsonObject.get("userId")).getBody();
-      //       String claim=(String)jws.get("Username");
-      session.getUserProperties().put("userId",jsonObject.get("userId"));
+        //decoding the token and verifying it 
+       session.getUserProperties().put("userId",jsonObject.get("userId"));
+          try {
+
+                Claims claim=Jwts.parser().setSigningKey("Secret").parseClaimsJws((String)session.getUserProperties().get("userId")).getBody();
+                String u=(String)claim.get("Username");
+                System.out.println("verified");
+                System.out.println(u);  
+
+                //OK, we can trust this JWT
+
+            } catch (SignatureException e) {
+              System.out.println("not verified");
+
+                e.printStackTrace();
+            }
+
+
+     
       sessions.put((String)jsonObject.get("userId"),session);
       clientData.put((String)jsonObject.get("userId"),new DistributionAlgo((Double)jsonObject.get("storage"),(Double)jsonObject.get("rating"),(Long)jsonObject.get("onlinePercent")));
     }

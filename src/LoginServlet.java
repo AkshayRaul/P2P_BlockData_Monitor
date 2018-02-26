@@ -13,10 +13,14 @@ import io.jsonwebtoken.impl.crypto.MacProvider;
 import java.security.Key;
 import io.jsonwebtoken.impl.crypto.MacProvider;
 import io.jsonwebtoken.impl.compression.*;
+import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.Claims;
+import javax.xml.bind.DatatypeConverter;
+import io.jsonwebtoken.SignatureException;
 
 public class LoginServlet extends HttpServlet{
 	//boolean auth;MongoClient mongo;  MongoDatabase db;
-	final static Key key = MacProvider.generateKey();
+	
 	public void doGet(HttpServletRequest req,HttpServletResponse res) throws ServletException,IOException
 	{  //System.out.println("do get called");
 		System.out.println("REQUEST");
@@ -26,20 +30,34 @@ public class LoginServlet extends HttpServlet{
 		String pass=req.getParameter("pass");
 		PrintWriter p=res.getWriter();
 		try{
-		Scanner scanner = new Scanner(new File("/opt/tomcat/webapps/Blockchain/src/User.txt"));
+		Scanner scanner = new Scanner(new File("E:/apache/apache-tomcat-8.0.30/webapps/Blockchain/src/User.txt"));
 			while (scanner.hasNextLine()) {
 				String[] data=scanner.nextLine().split(",");
 
 				if(data[1].equalsIgnoreCase(username) && data[2].equalsIgnoreCase(pass)){
 					flag=true;
 					//p.println("Succesfull");
-					System.out.println(key.toString());
 					String compactJws = Jwts.builder()
 					  .claim("Username",data[1])
-					  .signWith(SignatureAlgorithm.HS512,"TD8Guh82ARO4/jsAkAlfGB1fDy0QL+OmDFFvwrJa8LA=")
+					  .signWith(SignatureAlgorithm.HS256,"Secret")
 					  .compact();
 						System.out.println(compactJws);
 					  p.println(compactJws.trim());
+
+					 /* try {
+
+						    Claims claim=Jwts.parser().setSigningKey("Secret").parseClaimsJws(compactJws).getBody();
+						    String u=(String)claim.get("Username");
+						      p.println("verified");
+						      p.println(u);
+
+						    //OK, we can trust this JWT
+
+						} catch (SignatureException e) {
+							p.println("not verified");
+
+						    e.printStackTrace();
+						}*/
 
 
 				}
