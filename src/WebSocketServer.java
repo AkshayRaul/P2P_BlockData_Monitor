@@ -72,9 +72,27 @@ public class WebSocketServer {
       LOGGER.info(key);
       for (Iterator<String> iter = (headers.get(key)).iterator(); iter.hasNext(); ) {
         String val = iter.next();
+        if(key.compareToIgnoreCase("userid")==0){
+            try {
+
+                  Claims claim=Jwts.parser().setSigningKey("Secret").parseClaimsJws(val).getBody();
+                  String u=(String)claim.get("Username");
+                  System.out.println("verified");
+                  System.out.println(u.trim());
+                  session.getUserProperties().put("userId",u);
+                  //OK, we can trust this JWT
+
+              } catch (SignatureException e) {
+                System.out.println("not verified");
+
+                  e.printStackTrace();
+              }
+        }
         LOGGER.info(val);
       }
     }
+
+    session.getUserProperties().put("Download",pf);
     LOGGER.info(session.getId());
     clients.add(session);
     LOGGER.info("client connections:"+clients.size());
@@ -135,7 +153,7 @@ public class WebSocketServer {
             } catch (IOException e) {
               e.printStackTrace();
             }
-            file2peer.put(fileMD.get((String)session.getUserProperties().get("userId")).get(0).getFileId(),s);
+            file2peer.put(fileMD.get((String)session.getUserProperties().get("userId")).get(0).getFileId(),(String)session.getUserProperties().get("userId")+","+s);
             LOGGER.info(file2peer.size()+"");
             JSONObject jsonObject=new JSONObject();
             jsonObject.put("messageType","storage");
@@ -145,9 +163,10 @@ public class WebSocketServer {
             jsonObject.put("fileSize",fileMD.get((String)session.getUserProperties().get("userId")).get(0).getFileSize());
             //session.getBasicRemote().send(
             sendToPeer(s,jsonObject,(fileMD.get((String)session.getUserProperties().get("userId")).get(0)).getFileId()+"."+(fileMD.get((String)session.getUserProperties().get("userId")).get(0)).getFileType());
-            fileMD.get(session.getUserProperties().get("userId")).remove(0);
+            LOGGER.info(jsonObject.toString());
+            fileMD.get((String)session.getUserProperties().get("userId")).remove(0);
             LOGGER.info("DONE");
-            broadcast(session);
+            //broadcast(session);
           }
           catch(Exception ioe){
             ioe.printStackTrace();
@@ -162,30 +181,25 @@ public class WebSocketServer {
         }
       });
       t.start();
-
     }else {
       LOGGER.info("Download");
       message[0]=message[1]=0;
-      File file = new File("/opt/tomcat/data/"+(fileMD.get((String)session.getUserProperties().get("userId")).get(0)).getFileId()+"."+(fileMD.get((String)session.getUserProperties().get("userId")).get(0)).getFileType());
-      try (FileOutputStream fileOuputStream = new FileOutputStream(file)) {
-        fileOuputStream.write(message);
-        // LOGGER.info(message.toString());
-      } catch (IOException e) {
-        e.printStackTrace();
-      }
-      for(int i=0;i<pf.size();i++){
-        if((pf.get(i).from).compareTo((String)session.getUserProperties().get("userId"))==0){
-          File f=new File("/opt/tomcat/data/"+pf.get(i).fileId+pf.get(i).fileType);
-          byte[] bytes=new byte[(int)f.length()];
-          FileInputStream fileStream= new FileInputStream(f);
-          fileStream.read(bytes);
-          (sessions.get(pf.get(i).to)).getBasicRemote().sendBinary(ByteBuffer.wrap(bytes));
-          pf.remove(i);
-          break;
-        }
-      }
+      //
+    //   File file = new File("/opt/tomcat/data/"+((ArrayList<PushFile>)session.getUserProperties().get("Download")).get(0).fileId);
+    //   try (FileOutputStream fileOuputStream = new FileOutputStream(file)) {
+    //     fileOuputStream.write(message);
+    //   } catch (IOException e) {
+    //     e.printStackTrace();
+    //   }
+      //
+    //   File f=new File("/opt/tomcat/data/"+((ArrayList<PushFile>)session.getUserProperties().get("Download")).get(0).fileId);
+    //   byte[] bytes=new byte[(int)f.length()];
+    //   FileInputStream fileStream= new FileInputStream(f);
+    //   fileStream.read(bytes);
+    //   fileStream.close();
+      (sessions.get(((ArrayList<PushFile>)session.getUserProperties().get("Download")).get(0).to)).getBasicRemote().sendBinary(ByteBuffer.wrap(message));
+      ((ArrayList<PushFile>)session.getUserProperties().get("Download")).remove(0);
     }
-
   }
 
   @OnMessage
@@ -204,7 +218,6 @@ public class WebSocketServer {
     }
     LOGGER.info("MessageType:"+messageType);
     if(messageType.compareToIgnoreCase("fileUpload")==0){
-      // Logic for File Distribution
       LOGGER.info("messagetype: "+(String)jsonObject.get("messageType"));
       JSONArray arr=(JSONArray)jsonObject.get("files");
       Iterator i = arr.iterator();
@@ -223,35 +236,21 @@ public class WebSocketServer {
       }
     }
     else if(messageType.compareToIgnoreCase("metaData")==0){
-        //decoding the token and verifying it 
-       session.getUserProperties().put("userId",jsonObject.get("userId"));
-          try {
-
-                Claims claim=Jwts.parser().setSigningKey("Secret").parseClaimsJws((String)session.getUserProperties().get("userId")).getBody();
-                String u=(String)claim.get("Username");
-                System.out.println("verified");
-                System.out.println(u);  
-
-                //OK, we can trust this JWT
-
-            } catch (SignatureException e) {
-              System.out.println("not verified");
-
-                e.printStackTrace();
-            }
-
-
-     
-      sessions.put((String)jsonObject.get("userId"),session);
-      clientData.put((String)jsonObject.get("userId"),new DistributionAlgo((Double)jsonObject.get("storage"),(Double)jsonObject.get("rating"),(Long)jsonObject.get("onlinePercent")));
+        //decoding the token and verifying it
+    LOGGER.info((String)session.getUserProperties().get("userId"));
+      sessions.put((String)session.getUserProperties().get("userId"),session);
+      clientData.put((String)session.getUserProperties().get("userId"),new DistributionAlgo((Double)jsonObject.get("storage"),(Double)jsonObject.get("rating"),(Long)jsonObject.get("onlinePercent")));
     }
     else if(messageType.compareToIgnoreCase("fetchFile")==0){
-      Session fetchSession=sessions.get(file2peer.get(jsonObject.get("fileId")));
+      Session fetchSession=sessions.get(file2peer.get(jsonObject.get("fileId")).split(",")[1]);
       JSONObject file=new JSONObject();
       file.put("messageType","fetch");
       file.put("fileId",(String)jsonObject.get("fileId"));
-      pf.add(new PushFile((String)session.getUserProperties().get("userId"),(String)jsonObject.get("peerId"),(String)jsonObject.get("fileId"),(String)jsonObject.get("fileType")));
+      file.put("peerId",file2peer.get(jsonObject.get("fileId")).split(",")[0]);
+      //pf.add(new PushFile((String)session.getUserProperties().get("userId"),(String)jsonObject.get("peerId"),(String)jsonObject.get("fileId"),(String)jsonObject.get("fileType")));
       fetchSession.getBasicRemote().sendText(file.toString());
+  }else if(messageType.compareToIgnoreCase("fetch")==0){
+        ((ArrayList<PushFile>)session.getUserProperties().get("Download")).add(new PushFile((String)jsonObject.get("peerId"),(String)jsonObject.get("fileId")));
     }
     try{
 
@@ -306,10 +305,12 @@ public class WebSocketServer {
      // for(int i=0;i<bytes.length;i++){
        // System.out.print(bytes[i]);
      // }
+     fileStream.close();
       for(Iterator<Session> iter = clients.iterator(); iter.hasNext(); ){
         Session sess=iter.next();
         sess.getBasicRemote().sendBinary(ByteBuffer.wrap(bytes));
       }
+
     }catch(Exception e){
       e.printStackTrace();
     }

@@ -20,7 +20,7 @@ import io.jsonwebtoken.SignatureException;
 
 public class LoginServlet extends HttpServlet{
 	//boolean auth;MongoClient mongo;  MongoDatabase db;
-	
+
 	public void doGet(HttpServletRequest req,HttpServletResponse res) throws ServletException,IOException
 	{  //System.out.println("do get called");
 		System.out.println("REQUEST");
@@ -30,40 +30,35 @@ public class LoginServlet extends HttpServlet{
 		String pass=req.getParameter("pass");
 		PrintWriter p=res.getWriter();
 		try{
-		Scanner scanner = new Scanner(new File("E:/apache/apache-tomcat-8.0.30/webapps/Blockchain/src/User.txt"));
+		Scanner scanner = new Scanner(new File("/opt/tomcat/webapps/Blockchain/src/User.txt"));
 			while (scanner.hasNextLine()) {
 				String[] data=scanner.nextLine().split(",");
-
 				if(data[1].equalsIgnoreCase(username) && data[2].equalsIgnoreCase(pass)){
 					flag=true;
-					//p.println("Succesfull");
 					String compactJws = Jwts.builder()
 					  .claim("Username",data[1])
 					  .signWith(SignatureAlgorithm.HS256,"Secret")
 					  .compact();
 						System.out.println(compactJws);
-					  p.println(compactJws.trim());
+					  p.print(compactJws.trim());
 
-					 /* try {
-
-						    Claims claim=Jwts.parser().setSigningKey("Secret").parseClaimsJws(compactJws).getBody();
-						    String u=(String)claim.get("Username");
-						      p.println("verified");
-						      p.println(u);
-
-						    //OK, we can trust this JWT
-
-						} catch (SignatureException e) {
-							p.println("not verified");
-
-						    e.printStackTrace();
-						}*/
-
-
+					    // try {
+						//
+						//     Claims claim=Jwts.parser().setSigningKey("Secret").parseClaimsJws(compactJws).getBody();
+						//     String u=(String)claim.get("Username");
+						//       p.print("verified");
+						//
+						//
+						//     //OK, we can trust this JWT
+						//
+						// } catch (SignatureException e) {
+						// 	p.println("not verified");
+						//
+						//     e.printStackTrace();
+						// }
 				}
 			}
 			if(!flag){
-
 				p.println("Username and Password doesnt match");
 			}
 			scanner.close();

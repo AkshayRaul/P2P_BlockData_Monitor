@@ -57,8 +57,9 @@ public class DistributionAlgo  {
 	public String distribute(String appId){
 		HashMap<String,DistributionAlgo> clientData=WebSocketServer.getClientData();
 		clients=WebSocketServer.getOpenSessions();
-		
+
 		String ret=(String)clients.get(0).getUserProperties().get("userId");
+		System.out.println("USERID<DIST"+ret);
 		return ret;
 	}
 
