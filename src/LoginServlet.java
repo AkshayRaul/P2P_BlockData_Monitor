@@ -59,7 +59,7 @@ public class LoginServlet extends HttpServlet{
 				}
 			}
 			if(!flag){
-				p.println("Username and Password doesnt match");
+				p.print("Unauthorized");
 			}
 			scanner.close();
 		} catch (Exception e) {

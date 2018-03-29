@@ -14,7 +14,7 @@ import javax.websocket.Session;
 /**
 * Servlet implementation class DistributionAlgo
 */
-
+//
 // class SortByStorage implements Comparator<Session>{
 // 	// Used for sorting in ascending order of
 // 	// storage
@@ -26,22 +26,23 @@ import javax.websocket.Session;
 // class SortByRating implements Comparator<Session>{
 // 	// Used for sorting in ascending order of
 // 	// rating
-// 	public double compare(Session a, Session b){
-// 		return a.rating - b.rating;
+// 	public int compare(Session a, Session b){
+// 		a.getUserProperties().get("userId");
 // 	}
 // }
 // class SortByOnlinePercent implements Comparator<Session>{
 // 	// Used for sorting in ascending order of
 // 	// onlinePercent
-// 	public double compare(Session a, Session b){
-// 		return a.onlinePercent - b.onlinePercent;
+// 	public int compare(Session a, Session b){
+// 		return (int)(a.onlinePercent - b.onlinePercent);
 // 	}
 // }
 
 public class DistributionAlgo  {
-	private double storage;
-	private double rating;
-	private double onlinePercent;
+	long storage;
+	double rating;
+	double onlinePercent;
+	private static long MAX_STORAGE=5000000;
 	private ArrayList<Session> clients;
 	private Session bestPeersStorage[]=new Session[5];
 	private Session bestPeersRating[]=new Session[5];
@@ -49,7 +50,7 @@ public class DistributionAlgo  {
 
 	}
 
-	DistributionAlgo(double storage,double rating,double onlinePercent){
+	DistributionAlgo(long storage,double rating,double onlinePercent){
 		this.storage=storage;
 		this.rating=rating;
 		this.onlinePercent=onlinePercent;
@@ -57,10 +58,19 @@ public class DistributionAlgo  {
 	public String distribute(String appId){
 		HashMap<String,DistributionAlgo> clientData=WebSocketServer.getClientData();
 		clients=WebSocketServer.getOpenSessions();
-
-		String ret=(String)clients.get(0).getUserProperties().get("userId");
-		System.out.println("USERID<DIST"+ret);
-		return ret;
+		String selectedPeer="";
+		double maxProfileIndex=-99999;
+		for(Session client:clients){
+			DistributionAlgo profile=clientData.get((String)client.getUserProperties().get("userId"));
+			double peerProfile=((profile.storage/MAX_STORAGE)-1/profile.onlinePercent)/3;
+			System.out.println(peerProfile);
+			if(peerProfile>maxProfileIndex){
+				selectedPeer=(String)client.getUserProperties().get("userId");
+				maxProfileIndex=peerProfile;
+			}
+		}
+		System.out.println("USERID<DIST"+selectedPeer);
+		return selectedPeer;
 	}
 
 }

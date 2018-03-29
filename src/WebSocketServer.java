@@ -116,9 +116,7 @@ public class WebSocketServer {
       }
       // Distribution =========================================================================
 
-      Thread t =new Thread(new Runnable(){
 
-        public void run(){
           String s=new DistributionAlgo().distribute((String)session.getUserProperties().get("userId"));
           Blockchain bc=new Blockchain();
           String appId=(String)session.getUserProperties().get("userId");
@@ -161,12 +159,12 @@ public class WebSocketServer {
             jsonObject.put("fileName",fileMD.get((String)session.getUserProperties().get("userId")).get(0).getFileName());
             jsonObject.put("fileId",fileMD.get((String)session.getUserProperties().get("userId")).get(0).getFileId());
             jsonObject.put("fileSize",fileMD.get((String)session.getUserProperties().get("userId")).get(0).getFileSize());
-            //session.getBasicRemote().send(
+
             sendToPeer(s,jsonObject,(fileMD.get((String)session.getUserProperties().get("userId")).get(0)).getFileId()+"."+(fileMD.get((String)session.getUserProperties().get("userId")).get(0)).getFileType());
             LOGGER.info(jsonObject.toString());
             fileMD.get((String)session.getUserProperties().get("userId")).remove(0);
             LOGGER.info("DONE");
-            //broadcast(session);
+            broadcast(session);
           }
           catch(Exception ioe){
             ioe.printStackTrace();
@@ -178,9 +176,7 @@ public class WebSocketServer {
           //broadcast(session,fileMD.get(session.getUserProperties().get("userId")).get(0).getFileName());
 
 
-        }
-      });
-      t.start();
+    
     }else {
       LOGGER.info("Download");
       message[0]=message[1]=0;
@@ -237,9 +233,9 @@ public class WebSocketServer {
     }
     else if(messageType.compareToIgnoreCase("metaData")==0){
         //decoding the token and verifying it
-    LOGGER.info((String)session.getUserProperties().get("userId"));
+      LOGGER.info((String)session.getUserProperties().get("userId"));
       sessions.put((String)session.getUserProperties().get("userId"),session);
-      clientData.put((String)session.getUserProperties().get("userId"),new DistributionAlgo((Double)jsonObject.get("storage"),(Double)jsonObject.get("rating"),(Long)jsonObject.get("onlinePercent")));
+      clientData.put((String)session.getUserProperties().get("userId"),new DistributionAlgo((Long)jsonObject.get("storage"),(Long)jsonObject.get("rating"),(Double)jsonObject.get("onlinePercent")));
     }
     else if(messageType.compareToIgnoreCase("fetchFile")==0){
       Session fetchSession=sessions.get(file2peer.get(jsonObject.get("fileId")).split(",")[1]);
