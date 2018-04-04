@@ -9,17 +9,44 @@ table, th, td {
     border: 1px solid black;
 }
 </style>
+<link rel="stylesheet" type="text/css" href="https://stackpath.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 <title>JSP Reading Text File</title>
+<link rel="stylesheet" href="css/bootstrap.min.css" type="text/css">
+       <link rel="stylesheet" href="css/animate.min.css" type="text/css">
+
+   <!-- Custom CSS -->
+   <link rel="stylesheet" href="css/creative.min.css" type="text/css">
+
+            <!-- Custom Fonts -->
+  <link rel="stylesheet" href="css/font-awesome/css/font-awesome.min.css" type="text/css">
+
 </head>
+<header style="background-image: url('WebContent/code.jpg'); image-rendering: optimize-contrast ;">
+
+        <div class="header-content">
+                <div class="header-content-inner">
+                        <h1>Blockchain Check System</h1><br>
+                </div>
+        </div>
+  </header>
 
 <body>
-  <table>
-
+    <br>
+    <div class="container-fluid">
+    <table class="table table-responsive">
+        <thead class="thead-dark">
+            <th>Index</th>
+            <th>Timestamp</th>
+            <th>Prev Hash</th>
+            <th>Curr Hash</th>
+            <th>Sender</th>
+            <th>Peer</th>
+            <th>FileId</th>
+        </thead>
 
 <%
-String fileName = "C:/Users/SHWETHA/Desktop/apache-tomcat-8.5.23/data/Blockchain/blockchain.csv";
-out.println(fileName);
+String fileName = "/opt/tomcat/data/Blockchain/blockchain.csv";
 InputStream ins = application.getResourceAsStream(fileName);
 String block="";
 try{
@@ -46,5 +73,6 @@ catch(Exception e){
 }
 %>
 </table>
+</div>
 </body>
 </html>
