@@ -141,7 +141,7 @@ public class WebSocketServer {
             String filename= "/opt/tomcat/data/Blockchain/blockchain.csv";
             FileWriter fw = new FileWriter(filename,true); //the true will append the new data
             Block block= bc.getLatestBlock();
-            String newBlock=block.getIndex()+","+block.getTimestamp()+","+block.getHash()+","+block.getPreviousHash()+","+appId+","+block.getPeer()+","+block.getFileId()+"\n";
+            String newBlock="Create,"+block.getIndex()+","+block.getTimestamp()+","+block.getHash()+","+block.getPreviousHash()+","+appId+","+block.getPeer()+","+block.getFileId()+"\n";
             LOGGER.info("String:"+newBlock);
             //fw.write(newBlock+"\n");//appends the string to the file
             //fw.close();
@@ -176,7 +176,7 @@ public class WebSocketServer {
           //broadcast(session,fileMD.get(session.getUserProperties().get("userId")).get(0).getFileName());
 
 
-    
+
     }else {
       LOGGER.info("Download");
       message[0]=message[1]=0;
@@ -193,6 +193,21 @@ public class WebSocketServer {
     //   FileInputStream fileStream= new FileInputStream(f);
     //   fileStream.read(bytes);
     //   fileStream.close();
+    String filename= "/opt/tomcat/data/Blockchain/blockchain.csv";
+    FileWriter fw = new FileWriter(filename,true); //the true will append the new data
+    BlockchainServer bcs=WebSocketServer.getServer();
+    Blockchain bc=bcs.getAgent((String)session.getUserProperties().get("userId"));
+    Block block=bc.getLatestBlock();
+    String newBlock="Get,"+block.getIndex()+","+System.currentTimeMillis()+","+","+","+((ArrayList<PushFile>)session.getUserProperties().get("Download")).get(0).to+","+((ArrayList<PushFile>)session.getUserProperties().get("Download")).get(0).from+","+((ArrayList<PushFile>)session.getUserProperties().get("Download")).get(0).fileId+"\n";
+    LOGGER.info("String:"+newBlock);
+    //fw.write(newBlock+"\n");//appends the string to the file
+    //fw.close();
+    try (FileOutputStream fileOuputStream = new FileOutputStream(filename,true)) {
+      fileOuputStream.write(newBlock.getBytes());
+      LOGGER.info(message.toString());
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
       (sessions.get(((ArrayList<PushFile>)session.getUserProperties().get("Download")).get(0).to)).getBasicRemote().sendBinary(ByteBuffer.wrap(message));
       ((ArrayList<PushFile>)session.getUserProperties().get("Download")).remove(0);
     }
@@ -237,6 +252,12 @@ public class WebSocketServer {
       sessions.put((String)session.getUserProperties().get("userId"),session);
       clientData.put((String)session.getUserProperties().get("userId"),new DistributionAlgo((Long)jsonObject.get("storage"),(Long)jsonObject.get("rating"),(Double)jsonObject.get("onlinePercent")));
     }
+    else if(messageType.compareToIgnoreCase("metaData")==0){
+        //decoding the token and verifying it
+      LOGGER.info((String)session.getUserProperties().get("userId"));
+      sessions.put((String)session.getUserProperties().get("userId"),session);
+      clientData.put((String)session.getUserProperties().get("userId"),new DistributionAlgo((Long)jsonObject.get("storage"),(Long)jsonObject.get("rating"),(Double)jsonObject.get("onlinePercent")));
+    }
     else if(messageType.compareToIgnoreCase("fetchFile")==0){
       Session fetchSession=sessions.get(file2peer.get(jsonObject.get("fileId")).split(",")[1]);
       JSONObject file=new JSONObject();
@@ -245,8 +266,8 @@ public class WebSocketServer {
       file.put("peerId",file2peer.get(jsonObject.get("fileId")).split(",")[0]);
       //pf.add(new PushFile((String)session.getUserProperties().get("userId"),(String)jsonObject.get("peerId"),(String)jsonObject.get("fileId"),(String)jsonObject.get("fileType")));
       fetchSession.getBasicRemote().sendText(file.toString());
-  }else if(messageType.compareToIgnoreCase("fetch")==0){
-        ((ArrayList<PushFile>)session.getUserProperties().get("Download")).add(new PushFile((String)jsonObject.get("peerId"),(String)jsonObject.get("fileId")));
+    }else if(messageType.compareToIgnoreCase("fetch")==0){
+        ((ArrayList<PushFile>)session.getUserProperties().get("Download")).add(new PushFile((String)jsonObject.get("peerId"),(String)session.getUserProperties().get("userId"),(String)jsonObject.get("fileId")));
     }
     try{
 

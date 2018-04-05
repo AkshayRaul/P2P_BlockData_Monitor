@@ -1,11 +1,13 @@
 public class PushFile{
    String to;
    String fileId;
+   String from;
 
-
-   PushFile(String to,String fileId){
+   PushFile(String to, String from,String fileId){
        this.to=to;
+       this.from=from;
        this.fileId=fileId;
+
    }
 }
 /*

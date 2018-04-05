@@ -19,8 +19,7 @@ table, th, td {
    <link rel="stylesheet" href="css/creative.min.css" type="text/css">
 
             <!-- Custom Fonts -->
-  <link rel="stylesheet" href="css/font-awesome/css/font-awesome.min.css" type="text/css">
-
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 </head>
 <header style="background-image: url('WebContent/code.jpg'); image-rendering: optimize-contrast ;">
 
@@ -34,8 +33,15 @@ table, th, td {
 <body>
     <br>
     <div class="container-fluid">
+        <div class="row">
+            <div class="col-lg-4 col-sm-12 col-md-6">
+                <i class="fa fa-fa-file"></i>
+                <span>Files Uploaded</span>
+            </div>
+        </div>
     <table class="table table-responsive">
         <thead class="thead-dark">
+            <th>Mode</th>
             <th>Index</th>
             <th>Timestamp</th>
             <th>Prev Hash</th>
@@ -59,7 +65,7 @@ try{
   for(int j=0;j<blocks.length;j++){
     String columns[]=blocks[j].split(",");
   %>   <tr>
-  <%  for(int i=0;i<7;i++){%>
+  <%  for(int i=0;i<8;i++){%>
 
       <td><%= columns[i] %></td>
 
