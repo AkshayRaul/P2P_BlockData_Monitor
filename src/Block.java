@@ -1,3 +1,4 @@
+package blokdata;
 import java.io.Serializable;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -5,6 +6,7 @@ import java.security.NoSuchAlgorithmException;
 public class Block implements Serializable {
     private static final long serialVersionUID = 1L;
 
+    private String mode;
     private int index;
     private Long timestamp;
     private String hash;
@@ -15,6 +17,9 @@ public class Block implements Serializable {
 
     // for jackson
     public Block() {
+    }
+    public static void test(){
+        return;
     }
 
     @Override
@@ -55,7 +60,8 @@ public class Block implements Serializable {
         return result;
     }
 
-    public Block(int index, String preHash, String creator, String fileId, String peerId) {
+    public Block(String mode,int index, String preHash, String creator, String fileId, String peerId) {
+        this.mode=mode;
         this.index = index;
         this.previousHash = preHash;
         this.creator = creator;
@@ -91,6 +97,9 @@ public class Block implements Serializable {
 
     public String getPreviousHash() {
         return previousHash;
+    }
+    public String getMode() {
+        return mode;
     }
 
     private String calculateHash(String text) {

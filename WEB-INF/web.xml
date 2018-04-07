@@ -22,24 +22,29 @@
             <param-value>10000000</param-value>
 </context-param>
 
-<servlet>  
-<servlet-name>SignUp</servlet-name>  
-<servlet-class>SignUpServlet</servlet-class>  
-</servlet>  
-  
-<servlet-mapping>  
-<servlet-name>SignUp</servlet-name>  
-<url-pattern>/SignUp</url-pattern>  
-</servlet-mapping> 
+<servlet>
+<servlet-name>WebSocketServer</servlet-name>
+<servlet-class>blokdata.WebSocketServer</servlet-class>
+</servlet>
 
-<servlet>  
-<servlet-name>Login</servlet-name>  
-<servlet-class>LoginServlet</servlet-class>  
-</servlet>  
-  
-<servlet-mapping>  
-<servlet-name>Login</servlet-name>  
-<url-pattern>/Login</url-pattern>  
-</servlet-mapping> 
+<servlet>
+<servlet-name>SignUp</servlet-name>
+<servlet-class>blokdata.SignUpServlet</servlet-class>
+</servlet>
+
+<servlet-mapping>
+<servlet-name>SignUp</servlet-name>
+<url-pattern>/SignUp</url-pattern>
+</servlet-mapping>
+
+<servlet>
+<servlet-name>Login</servlet-name>
+<servlet-class>blokdata.LoginServlet</servlet-class>
+</servlet>
+
+<servlet-mapping>
+<servlet-name>Login</servlet-name>
+<url-pattern>/Login</url-pattern>
+</servlet-mapping>
 
 </web-app>

@@ -1,3 +1,4 @@
+package blokdata;
 import javax.servlet.http.*;
 import javax.servlet.*;
 import java.io.*;
@@ -70,7 +71,7 @@ public class SignUpServlet extends HttpServlet{
       FileWriter fw=null;
       BufferedWriter bw=null;
       File f=null;
-      String path="E:/apache/apache-tomcat-8.0.30/webapps/Blockchain/src/User.txt";
+      String path="/opt/tomcat/webapps/Blockchain/src/User.txt";
       try{
       		f=new File(path);
       		if(f.exists()){

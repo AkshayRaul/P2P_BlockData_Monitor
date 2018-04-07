@@ -1,3 +1,4 @@
+package blokdata;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -8,7 +9,7 @@ import java.util.logging.*;
 public class BlockchainServer {
 
     private List<Blockchain> agents = new ArrayList<Blockchain>();
-    private static final Block root = new Block(0, "ROOT_HASH", "ROOT","ROOT_ID","ROOT_PEER");
+    private static final Block root = new Block("ROOT",0, "ROOT_HASH", "ROOT","ROOT_ID","ROOT_PEER");
     private final static Logger LOGGER = Logger.getLogger("BlockchainServer");
 
     public Blockchain addAgent(String name) {
@@ -54,10 +55,10 @@ public class BlockchainServer {
         agents.clear();
     }
 
-    public Block createBlock(final String name,final String fileId,final String peerId) {
+    public Block createBlock(final String mode,final String name,final String fileId,final String peerId) {
         final Blockchain blockchain = getAgent(name);
         if (blockchain != null) {
-            return blockchain.createBlock(fileId,peerId);
+            return blockchain.createBlock(mode,fileId,peerId);
         }
         return null;
     }
