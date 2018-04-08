@@ -61,7 +61,7 @@ public class WebSocketServer {
   public static BlockchainServer getServer(){
     return bcs;
   }
-  
+
   public void finalize(){
   }
 
@@ -100,6 +100,7 @@ public class WebSocketServer {
     session.getUserProperties().put("Download",pf);
     LOGGER.info(session.getId());
     clients.add(session);
+    BlockStats.addOnlineDevices(clients.size());
     LOGGER.info("client connections:"+clients.size());
   }
 
@@ -110,7 +111,7 @@ public class WebSocketServer {
     //Upload bits 11   & Download bits 00 to be prefixed to the ByteArray
     if(message[0]==1&&message[1]==1){
       LOGGER.info("Upload");
-      File file = new File("/opt/tomcat/data/"+(fileMD.get((String)session.getUserProperties().get("userId")).get(0)).getFileId()+"."+(fileMD.get((String)session.getUserProperties().get("userId")).get(0)).getFileType());
+      File file = new File("C:/Users/SHWETHA/Desktop/apache-tomcat-8.5.23/data/"+(fileMD.get((String)session.getUserProperties().get("userId")).get(0)).getFileId()+"."+(fileMD.get((String)session.getUserProperties().get("userId")).get(0)).getFileType());
       try (FileOutputStream fileOuputStream = new FileOutputStream(file)) {
         fileOuputStream.write(message);
         LOGGER.info(message.toString());
@@ -141,7 +142,7 @@ public class WebSocketServer {
           bc.addBlock(bc.createBlock("Create",fileMD.get((String)session.getUserProperties().get("userId")).get(0).getFileId(),s));
           LOGGER.info("BLockADDED");
         }
-        String filename= "/opt/tomcat/data/Blockchain/blockchain.csv";
+        String filename= "C:/Users/SHWETHA/Desktop/apache-tomcat-8.5.23/data/Blockchain/blockchain.csv";
         FileWriter fw = new FileWriter(filename,true); //the true will append the new data
         Block block= bc.getLatestBlock();
         String newBlock="Create,"+block.getIndex()+","+block.getTimestamp()+","+block.getHash()+","+block.getPreviousHash()+","+appId+","+block.getPeer()+","+block.getFileId()+"\n";
@@ -196,7 +197,7 @@ public class WebSocketServer {
     //   FileInputStream fileStream= new FileInputStream(f);
     //   fileStream.read(bytes);
     //   fileStream.close();
-        String filename= "/opt/tomcat/data/Blockchain/blockchain.csv";
+        String filename= "C:/Users/SHWETHA/Desktop/apache-tomcat-8.5.23/data/Blockchain/blockchain.csv";
         FileWriter fw = new FileWriter(filename,true); //the true will append the new data
         BlockchainServer bcs=WebSocketServer.getServer();
         Blockchain bc=bcs.getAgent(((ArrayList<PushFile>)session.getUserProperties().get("Download")).get(0).to);
@@ -234,6 +235,8 @@ public class WebSocketServer {
     }
     LOGGER.info("MessageType:"+messageType);
     if(messageType.compareToIgnoreCase("fileUpload")==0){
+      long start=System.currentTimeMillis();
+      BlockStats.setFilesCount();
       LOGGER.info("messagetype: "+(String)jsonObject.get("messageType"));
       JSONArray arr=(JSONArray)jsonObject.get("files");
       Iterator i = arr.iterator();
@@ -250,6 +253,8 @@ public class WebSocketServer {
         }
         LOGGER.info(title);
       }
+      long end=System.currentTimeMillis();
+      BlockStats.setAvgLatency(end-start);
     }
     else if(messageType.compareToIgnoreCase("metaData")==0){
         //decoding the token and verifying it
@@ -299,7 +304,7 @@ public class WebSocketServer {
 
   public static void sendToPeer(String user,JSONObject json,String fileName){
     Session sendToPeer=sessions.get(user);
-    File f=new File("/opt/tomcat/data/"+fileName);
+    File f=new File("C:/Users/SHWETHA/Desktop/apache-tomcat-8.5.23/data/"+fileName);
     byte[] bytes=new byte[(int)f.length()];
 
     try{
@@ -315,7 +320,7 @@ public class WebSocketServer {
   static void broadcast(Session session){
 
     try{
-      File f=new File("/opt/tomcat/data/Blockchain/blockchain.csv");
+      File f=new File("C:/Users/SHWETHA/Desktop/apache-tomcat-8.5.23/data/Blockchain/blockchain.csv");
       LOGGER.info("Blockchain file length"+f.length());
       byte[] bytes=new byte[(int)f.length()+2];
       bytes[0]=0;

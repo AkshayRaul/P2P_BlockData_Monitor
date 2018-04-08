@@ -71,7 +71,7 @@ public class SignUpServlet extends HttpServlet{
       FileWriter fw=null;
       BufferedWriter bw=null;
       File f=null;
-      String path="/opt/tomcat/webapps/Blockchain/src/User.txt";
+      String path="C:/Users/SHWETHA/Desktop/apache-tomcat-8.5.23/webapps/Blockchain/src/User.txt";
       try{
       		f=new File(path);
       		if(f.exists()){

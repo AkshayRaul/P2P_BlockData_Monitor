@@ -31,7 +31,7 @@ public class LoginServlet extends HttpServlet{
 		String pass=req.getParameter("pass");
 		PrintWriter p=res.getWriter();
 		try{
-		Scanner scanner = new Scanner(new File("/opt/tomcat/webapps/Blockchain/src/User.txt"));
+		Scanner scanner = new Scanner(new File("C:/Users/SHWETHA/Desktop/apache-tomcat-8.5.23/webapps/Blockchain/src/User.txt"));
 			while (scanner.hasNextLine()) {
 				String[] data=scanner.nextLine().split(",");
 				if(data[1].equalsIgnoreCase(username) && data[2].equalsIgnoreCase(pass)){

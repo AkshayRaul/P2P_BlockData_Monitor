@@ -1,5 +1,5 @@
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
-pageEncoding="ISO-8859-1" import="java.io.*,java.util.*, java.net.*, blokdata.*" %>
+pageEncoding="ISO-8859-1" import="java.io.*,java.util.*, java.net.*, blokdata.*,BlockStats.*,WebSocketServer.*" %>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
@@ -56,21 +56,21 @@ pageEncoding="ISO-8859-1" import="java.io.*,java.util.*, java.net.*, blokdata.*"
                 <i class="fa fa-4x fa-file"></i>
 
                 <span class="stat-text">Files Shared</span>
-                <span class="stat-num">asd</span>
+                <span class="stat-num"><%= BlockStats.getFilesCount() %></span>
 
             </div>
             <div class="col-lg-4 col-sm-12 col-md-6 holder">
                 <i class="fas fa-4x fa-clock"></i>
 
                 <span class="stat-text">Average Latency</span>
-                <span class="stat-num">asd</span>
+                <span class="stat-num"><%= BlockStats.getAvgLatency()%>ms</span>
 
             </div>
             <div class="col-lg-4 col-sm-12 col-md-6 holder">
                 <i class="fas fa-4x fa-mobile"></i>
 
                 <span class="stat-text">Devices Online</span>
-                <span class="stat-num">asd</span>
+                <span class="stat-num"><%= BlockStats.onlineDevices %></span>
 
             </div>
         </div>

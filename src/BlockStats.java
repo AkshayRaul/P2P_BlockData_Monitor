@@ -1,31 +1,31 @@
 package blokdata;
 
 public class BlockStats{
-    private static int filesCount;
-    private static double averageLatency;
-    private static int onlineDevices;
+    public static int filesCount=0;
+    public static long averageLatency=0;
+    public static int onlineDevices=0;
 
-    public static setFilesCount(){
+    public static void setFilesCount(){
         filesCount++;
     }
-    public static removeFilesCount(){
+    public static void removeFilesCount(){
         filesCount--;
     }
-    public static getFilesCount(){
+    public static int getFilesCount(){
         return filesCount;
     }
 
-    public static setAvgLatency(double latency){
-        averageLatency=latency;        
+    public static void setAvgLatency(long latency){
+        averageLatency=latency;
     }
-    public static getAvgLatency(){
+    public static long getAvgLatency(){
         return averageLatency;
     }
 
-    public static addOnlineDevices(){
-        onlineDevices++;
+    public static void addOnlineDevices(int peers){
+        onlineDevices=peers;
     }
-    public static removeOnlineDevices(){
+    public static void removeOnlineDevices(){
         onlineDevices--;
     }
 
