@@ -5,27 +5,28 @@ public class BlockStats{
     private static double averageLatency;
     private static int onlineDevices;
 
-    public static setFilesCount(){
+    public static  void setFilesCount(){
         filesCount++;
     }
-    public static removeFilesCount(){
+    public static void removeFilesCount(){
         filesCount--;
     }
-    public static getFilesCount(){
+    public static int getFilesCount(){
         return filesCount;
     }
 
-    public static setAvgLatency(double latency){
-        averageLatency=latency;        
-    }
-    public static getAvgLatency(){
-        return averageLatency;
+    public static void setAvgLatency(double latency){
+        averageLatency=latency;
     }
 
-    public static addOnlineDevices(){
+    public static double getAvgLatency(){
+            return averageLatency;
+    }
+
+    public static void addOnlineDevices(){
         onlineDevices++;
     }
-    public static removeOnlineDevices(){
+    public static void removeOnlineDevices(){
         onlineDevices--;
     }
 

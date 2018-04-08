@@ -60,7 +60,7 @@ public class Block implements Serializable {
         return result;
     }
 
-    public Block(String mode,int index, String preHash, String creator, String fileId, String peerId) {
+    public Block(String mode,int index,String hash, String preHash, String creator, String fileId, String peerId) {
         this.mode=mode;
         this.index = index;
         this.previousHash = preHash;
@@ -68,7 +68,7 @@ public class Block implements Serializable {
         this.fileId = fileId;
         this.peerId= peerId;
         timestamp = System.currentTimeMillis();
-        hash = calculateHash(String.valueOf(index) + previousHash + String.valueOf(timestamp));
+        this.hash = hash;
     }
 
     public String getFileId(){

@@ -50,7 +50,7 @@ public class Blockchain {
         return blockchain;
     }
 
-    Block createBlock(String mode,String fileId,String peerId) {
+    Block createBlock(String mode,String fileId,String peerId, String hash) {
         if (blockchain.isEmpty()) {
             return null;
         }
@@ -61,7 +61,7 @@ public class Blockchain {
         }
 
         final int index = previousBlock.getIndex() + 1;
-        final Block block = new Block(mode,index, previousBlock.getHash(), name, fileId, peerId);
+        final Block block = new Block(mode,index, hash, previousBlock.getHash(), name, fileId, peerId);
         LOGGER.info(String.format("%s created new block %s", name, block.toString()));
         return block;
     }
