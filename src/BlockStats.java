@@ -1,9 +1,10 @@
 package blokdata;
 
 public class BlockStats{
-    private static int filesCount;
-    private static double averageLatency;
-    private static int onlineDevices;
+    public static int filesCount=0;
+    public static double averageLatency=0;
+    public static int onlineDevices=0;
+
 
     public static  void setFilesCount(){
         filesCount++;
@@ -18,13 +19,12 @@ public class BlockStats{
     public static void setAvgLatency(double latency){
         averageLatency=latency;
     }
-
     public static double getAvgLatency(){
-            return averageLatency;
+        return averageLatency;
     }
 
-    public static void addOnlineDevices(){
-        onlineDevices++;
+    public static void addOnlineDevices(int peers){
+        onlineDevices=peers;
     }
     public static void removeOnlineDevices(){
         onlineDevices--;

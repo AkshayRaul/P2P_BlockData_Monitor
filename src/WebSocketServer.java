@@ -127,6 +127,7 @@ public class WebSocketServer {
     session.getUserProperties().put("Download",pf);
     LOGGER.info(session.getId());
     clients.add(session);
+    BlockStats.addOnlineDevices(clients.size());
     LOGGER.info("client connections:"+clients.size());
   }
 
@@ -222,15 +223,17 @@ public class WebSocketServer {
     //   FileInputStream fileStream= new FileInputStream(f);
     //   fileStream.read(bytes);
     //   fileStream.close();
+
         String hash=calculateHash(message);
         String filename= "/opt/tomcat/data/Blockchain/blockchain.csv";
         FileWriter fw = new FileWriter(filename,true); //the true will append the new data
         BlockchainServer bcs=WebSocketServer.getServer();
         Blockchain bc=bcs.getAgent(((ArrayList<PushFile>)session.getUserProperties().get("Download")).get(0).to);
         Block block=bc.getLatestBlock();
-        bc.addBlock(bc.createBlock("Fetch",((ArrayList<PushFile>)session.getUserProperties().get("Download")).get(0).to,((ArrayList<PushFile>)session.getUserProperties().get("Download")).get(0).from,hash));
+        bc.addBlock(bc.createBlock("Fetch",((ArrayList<PushFile>)session.getUserProperties().get("Download")).get(0).fileId,((ArrayList<PushFile>)session.getUserProperties().get("Download")).get(0).from,hash));
         LOGGER.info("BLockADDED");
-        String newBlock="Get,"+block.getIndex()+","+System.currentTimeMillis()+","+","+","+((ArrayList<PushFile>)session.getUserProperties().get("Download")).get(0).to+","+((ArrayList<PushFile>)session.getUserProperties().get("Download")).get(0).from+","+((ArrayList<PushFile>)session.getUserProperties().get("Download")).get(0).fileId+"\n";
+        block=bc.getLatestBlock();
+        String newBlock="Fetch,"+block.getIndex()+","+System.currentTimeMillis()+","+block.getHash()+","+block.getPreviousHash()+","+((ArrayList<PushFile>)session.getUserProperties().get("Download")).get(0).to+","+((ArrayList<PushFile>)session.getUserProperties().get("Download")).get(0).from+","+((ArrayList<PushFile>)session.getUserProperties().get("Download")).get(0).fileId+"\n";
         LOGGER.info("String:"+newBlock);
         //fw.write(newBlock+"\n");//appends the string to the file
         //fw.close();
@@ -243,6 +246,8 @@ public class WebSocketServer {
           (sessions.get(((ArrayList<PushFile>)session.getUserProperties().get("Download")).get(0).to)).getBasicRemote().sendBinary(ByteBuffer.wrap(message));
           ((ArrayList<PushFile>)session.getUserProperties().get("Download")).remove(0);
         }
+        broadcast(session);
+
   }
 
   @OnMessage
@@ -261,6 +266,8 @@ public class WebSocketServer {
     }
     LOGGER.info("MessageType:"+messageType);
     if(messageType.compareToIgnoreCase("fileUpload")==0){
+      long start=System.currentTimeMillis();
+      BlockStats.setFilesCount();
       LOGGER.info("messagetype: "+(String)jsonObject.get("messageType"));
       JSONArray arr=(JSONArray)jsonObject.get("files");
       Iterator i = arr.iterator();
@@ -277,6 +284,9 @@ public class WebSocketServer {
         }
         LOGGER.info(title);
       }
+      long end=System.currentTimeMillis();
+      BlockStats.setAvgLatency((double)(end-start)/BlockStats.getFilesCount());
+
     }
     else if(messageType.compareToIgnoreCase("metaData")==0){
         //decoding the token and verifying it
@@ -300,6 +310,8 @@ public class WebSocketServer {
       fetchSession.getBasicRemote().sendText(file.toString());
     }else if(messageType.compareToIgnoreCase("fetch")==0){
         ((ArrayList<PushFile>)session.getUserProperties().get("Download")).add(new PushFile((String)jsonObject.get("peerId"),(String)session.getUserProperties().get("userId"),(String)jsonObject.get("fileId")));
+    }else if(messageType.compareToIgnoreCase("deleteFile")==0){
+
     }
     try{
 
@@ -313,6 +325,7 @@ public class WebSocketServer {
     LOGGER.info("Closed:"+session.getUserProperties().get("userId"));
     fileMD.remove(session.getUserProperties().get("userId"));
     clients.remove(session);
+    BlockStats.removeOnlineDevices();
     System.gc();
 
   }

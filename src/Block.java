@@ -60,7 +60,7 @@ public class Block implements Serializable {
         return result;
     }
 
-    public Block(String mode,int index,String hash, String preHash, String creator, String fileId, String peerId) {
+    public Block(String mode,int index,String hash, String preHash, String creator, String peerId, String fileId) {
         this.mode=mode;
         this.index = index;
         this.previousHash = preHash;

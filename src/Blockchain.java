@@ -61,7 +61,7 @@ public class Blockchain {
         }
 
         final int index = previousBlock.getIndex() + 1;
-        final Block block = new Block(mode,index, hash, previousBlock.getHash(), name, fileId, peerId);
+        final Block block = new Block(mode,index, hash, previousBlock.getHash(), name, peerId, fileId);
         LOGGER.info(String.format("%s created new block %s", name, block.toString()));
         return block;
     }
