@@ -57,7 +57,7 @@ public class WebSocketServer {
   static BlockchainServer bcs=new BlockchainServer();
 
   static HashMap<String,DistributionAlgo> getClientData(){
-    return clientData;
+    return clientData;      
   }
   static ArrayList<Session> getOpenSessions(){
     return clients;

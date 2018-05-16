@@ -18,18 +18,6 @@ http://www.java2s.com/Code/Jar/j/Downloadjsonsimple11jar.htm
 [![Build Status](https://img.shields.io/circleci/project/github/ntkme/github-buttons.svg)](https://travis-ci.org/Netflix/fast_jsonapi)
 
 
-# ToDo List
-----------
-+ ~~Send file data to server as per Specification below~~
-+ Create a service for the app which runs even after app is Closed
-+ ~~Handle nanoHTTP Server errors~~
-+ ~~Authentication using key exchange~~
-+ Server Side Authentication
-+ ~~Create Blockchain and save data on a file/csv/json~~
-+ Send file permissions
-+ ~~Broadcast ledgers~~
-+ Check ledgers
-
 ## File Upload format
 
 Prefix ```11``` while uploading file to server
@@ -117,3 +105,18 @@ Server Sends data to destination node for file Upload
   "ownerId":""
 }
 ```
+
+
+# ToDo List
+----------
++ ~~Send file data to server as per Specification below~~
++ Create a service for the app which runs even after app is Closed
++ ~~Handle nanoHTTP Server errors~~
++ ~~Authentication using key exchange~~
++ Server Side Authentication
++ ~~Create Blockchain and save data on a file/csv/json~~
++ Send file permissions
++ ~~Broadcast ledgers~~
++ Check ledgers
+
+# Future Work
