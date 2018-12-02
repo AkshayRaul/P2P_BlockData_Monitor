@@ -1,9 +1,0 @@
-10ZP4ITI3A,abcd,13,abc,135
-P0TOCJKDEX,Akshay,akshay,a@a.com,12383839
-JEF4VQUEC0,Shwetha,shwetha,shwethakraman57@gmail.com,123
-PYFJNHFXWH,Sk,sk,shsh,967
-D9TTLZI4GH,ShwethaK,shwetha,shwethakraman57@gmail.com,9679173884
-V4RU3ZB16T,kshitij,1234,k@k,1234567
-K8WZTRVUPW,Shwetha,shwetha,shwethakraman57@gmail.com,9728874588
-5ZK1CDYHZ1,AkshayR,akshay,a@a.com,2262729
-7C1MDIX101,AkshayR,akshay,raulakshay@gmail.com,9999999999
